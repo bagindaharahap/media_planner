@@ -1,18 +1,27 @@
-<?php
+    <?php
 
-use Illuminate\Support\Facades\Route;
+    use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | Web Routes
+    |--------------------------------------------------------------------------
+    */
 
-Route::get('/', function () {
-    return view('dashboard');
-});
+    // Halaman Dasbor Utama
+    Route::get('/', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // Halaman Board Planning
+    Route::get('/board-planning', function () {
+    return view('boardplanning.indexboard'); 
+    })->name('board.index');
+    // Route untuk create planning
+    Route::get('/board-planning/create', function () {
+        return view('boardplanning/createplanning');
+    })->name('board.create');
+
+    Route::get('/calendar', function () {
+        return view('calendernotes/calendernotesindex');
+    })->name('calendar.index');
