@@ -210,58 +210,61 @@ x-transition:enter-end="opacity-100 scale-100 translate-y-0"
             </div>
         </div>
 
-        <!-- Aset Media (Tautan & Drop File) -->
-        <div class="space-y-4">
-            <div class="flex items-center justify-between ml-1">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Aset Media (Hasil Konten)</label>
-                <!-- Label Kunci jika di Backlog -->
-                <div x-show="editingPlanning.status === 'backlog'" class="flex items-center gap-2 px-2 py-1 bg-amber-50 rounded-lg border border-amber-100">
-                    <i class="fa-solid fa-lock text-[9px] text-amber-500"></i>
-                    <span class="text-[9px] font-bold text-amber-600 uppercase tracking-tighter">Buka di In Progress</span>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-                <!-- Tautan Media -->
-                <div class="space-y-3 transition-all" :class="editingPlanning.status === 'backlog' ? 'opacity-40 grayscale' : ''">
-                    <div class="flex items-center gap-2 px-1">
-                        <i class="fa-solid fa-cloud-arrow-up text-indigo-500 text-xs"></i>
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Link Konten (G-Drive / Dropbox)</span>
+        <!-- Aset Media & Catatan Revisi -->
+        <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Kolom Kiri: Aset Media -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between ml-1">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Aset Media (Hasil Konten)</label>
+                        <!-- Label Kunci jika di Backlog/Progress -->
+                        <div x-show="['backlog', 'progress'].includes(editingPlanning.status)" class="flex items-center gap-2 px-2 py-1 bg-amber-50 rounded-lg border border-amber-100">
+                            <i class="fa-solid fa-lock text-[9px] text-amber-500"></i>
+                            <span class="text-[9px] font-bold text-amber-600 uppercase tracking-tighter">Buka di In Review</span>
+                        </div>
                     </div>
-                    <div 
-                        class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all"
-                        :class="editingPlanning.status !== 'backlog' ? 'focus-within:ring-2 focus-within:ring-indigo-100 focus-within:bg-white' : 'cursor-not-allowed bg-slate-100'"
-                    >
-                        <i class="fa-solid fa-link text-slate-300"></i>
-                        <input 
-                            type="text" 
-                            x-model="editingPlanning.media_link" 
-                            :disabled="editingPlanning.status === 'backlog'"
-                            placeholder="https://drive.google.com/..." 
-                            class="bg-transparent w-full text-sm font-bold text-slate-600 outline-none"
-                            :class="editingPlanning.status === 'backlog' ? 'cursor-not-allowed' : ''"
+                    
+                    <div class="space-y-4" :class="['backlog', 'progress'].includes(editingPlanning.status) ? 'opacity-40 grayscale pointer-events-none' : ''">
+                        <!-- Tautan Media -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all focus-within:ring-2 focus-within:ring-indigo-100 focus-within:bg-white">
+                            <i class="fa-solid fa-link text-slate-300"></i>
+                            <input 
+                                type="text" 
+                                x-model="editingPlanning.media_link" 
+                                placeholder="https://drive.google.com/..." 
+                                class="bg-transparent w-full text-sm font-bold text-slate-600 outline-none"
+                            >
+                        </div>
+
+                        <!-- Upload Placeholder -->
+                        <div 
+                            class="border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center transition-all group cursor-pointer border-slate-200 bg-slate-50 hover:bg-white hover:border-indigo-300"
+                            @click="$refs.fileInputEdit.click()"
                         >
+                            <input type="file" x-ref="fileInputEdit" class="hidden">
+                            <i class="fa-solid fa-photo-film text-slate-300 mb-2 text-xl group-hover:text-indigo-400 transition-colors"></i>
+                            <p class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-600 transition-colors">Klik untuk ganti file preview</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Upload Placeholder -->
-                <div class="space-y-3 transition-all" :class="editingPlanning.status === 'backlog' ? 'opacity-40 grayscale' : ''">
-                    <div class="flex items-center gap-2 px-1">
-                        <i class="fa-solid fa-file-video text-indigo-500 text-xs"></i>
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Upload Preview (Foto/Video)</span>
+                <!-- Kolom Kanan: Catatan Revisi (Hanya tampil di Review ke atas) -->
+                <div class="space-y-4" x-show="!['backlog', 'progress'].includes(editingPlanning.status)" x-transition>
+                    <div class="flex items-center gap-2 ml-1">
+                        <i class="fa-solid fa-clipboard-check text-rose-500 text-xs"></i>
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Catatan Revisi / Feedback</label>
                     </div>
-                    <div 
-                        class="border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center transition-all group relative"
-                        :class="editingPlanning.status === 'backlog' 
-                            ? 'border-slate-200 bg-slate-100 cursor-not-allowed' 
-                            : 'border-slate-200 bg-slate-50 hover:bg-white hover:border-indigo-300 cursor-pointer'"
-                        @click="editingPlanning.status !== 'backlog' ? $refs.fileInputEdit.click() : null"
-                    >
-                        <input type="file" x-ref="fileInputEdit" class="hidden" :disabled="editingPlanning.status === 'backlog'">
-                        <i class="fa-solid fa-photo-film text-slate-300 mb-2 transition-colors" :class="editingPlanning.status !== 'backlog' ? 'group-hover:text-indigo-400' : ''"></i>
-                        <p class="text-[10px] font-bold text-slate-400 transition-colors" :class="editingPlanning.status !== 'backlog' ? 'group-hover:text-indigo-600' : ''">
-                            <span x-text="editingPlanning.status === 'backlog' ? 'Terkunci (Masih Backlog)' : 'Klik untuk upload file'"></span>
-                        </p>
+                    <div class="relative">
+                        <textarea 
+                            x-model="editingPlanning.revision_note" 
+                            rows="6" 
+                            placeholder="Tuliskan poin-poin yang perlu diperbaiki oleh tim di sini..." 
+                            class="w-full bg-rose-50/30 border border-rose-100 rounded-[2rem] p-6 text-sm text-slate-600 focus:ring-2 focus:ring-rose-500/20 focus:bg-white outline-none transition-all placeholder:text-slate-300 italic"
+                        ></textarea>
+                        <!-- Dekorasi Ikon Feedback -->
+                        <div class="absolute bottom-4 right-6 text-rose-200 pointer-events-none">
+                            <i class="fa-solid fa-comment-dots text-2xl opacity-20"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -274,13 +277,14 @@ x-transition:enter-end="opacity-100 scale-100 translate-y-0"
         <button @click="console.log('Update:', editingPlanning); showEditModal = false;" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transform active:scale-95 transition-all">Simpan Perubahan</button>
     </div>
 </div>
-<style>
-    .editor-content b, .editor-content strong { font-weight: bold !important; }
-    .editor-content i, .editor-content em { font-style: italic !important; }
-    .editor-content u { text-decoration: underline !important; }
-    .editor-content ul { list-style-type: disc !important; padding-left: 1.5rem !important; }
-    .editor-content:empty:before { content: attr(data-placeholder); color: #cbd5e1; }
-</style>
 
 
 </div>
+
+<style>
+.editor-content b, .editor-content strong { font-weight: bold !important; }
+.editor-content i, .editor-content em { font-style: italic !important; }
+.editor-content u { text-decoration: underline !important; }
+.editor-content ul { list-style-type: disc !important; padding-left: 1.5rem !important; }
+.editor-content:empty:before { content: attr(data-placeholder); color: #cbd5e1; }
+</style>
