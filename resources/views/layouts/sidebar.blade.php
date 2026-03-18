@@ -13,7 +13,7 @@
     <nav class="flex-1 px-3 md:px-6 space-y-2 mt-4" x-data="{ openPosts: false }">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2 hidden md:block">Utama</p>
         
-        <a href="#" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all">
+        <a href="{{ route('dashboard') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
             <i class="fa-solid fa-layer-group text-lg md:text-sm"></i>
             <span class="font-semibold text-sm hidden md:block">Dasbor</span>
         </a>

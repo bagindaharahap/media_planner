@@ -3,7 +3,13 @@
 @section('title', 'Dasbor Media Planner - PlannerX')
 
 @section('content')
-<div class="space-y-8">
+
+<!-- Data dari Database -->
+<script id="plannings-data" type="application/json">
+    {!! json_encode($plannings ?? []) !!}
+</script>
+
+<div class="space-y-8" x-data="dashboardData()">
     <!-- Barisan Kartu Statistik (Stat Cards) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Engagement Rate -->
@@ -42,7 +48,7 @@
             <h3 class="text-2xl font-black text-slate-900 mt-1">842.0K</h3>
         </div>
 
-        <!-- Scheduled Posts -->
+        <!-- Scheduled Posts (Terintegrasi) -->
         <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm transition hover:-translate-y-1">
             <div class="flex justify-between items-start mb-4">
                 <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600">
@@ -50,7 +56,7 @@
                 </div>
             </div>
             <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Konten Terjadwal</p>
-            <h3 class="text-2xl font-black text-slate-900 mt-1">12 Post</h3>
+            <h3 class="text-2xl font-black text-slate-900 mt-1" x-text="upcomingPosts.length + ' Post'">0 Post</h3>
         </div>
     </div>
 
@@ -102,9 +108,9 @@
             </div>
 
             <div class="relative z-10 mt-8 pt-6 border-t border-white/10">
-                <button class="w-full py-4 bg-indigo-600 rounded-xl font-bold text-sm hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-500/20">
+                <a href="{{ route('board.index') }}?create=true" class="w-full flex items-center justify-center py-4 bg-indigo-600 rounded-xl font-bold text-sm hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-500/20">
                     <i class="fa-solid fa-plus mr-2 text-xs"></i> Buat Jadwal Baru
-                </button>
+                </a>
             </div>
             
             <!-- Dekorasi Blur -->
@@ -112,67 +118,133 @@
         </div>
     </div>
 
-    <!-- Daftar Konten Mendatang -->
+    <!-- Daftar Konten Mendatang (Terintegrasi) -->
     <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden mb-10">
         <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
             <h3 class="font-bold text-lg text-slate-800">Konten Terjadwal</h3>
-            <button class="text-indigo-600 font-bold text-sm hover:underline">Lihat Kalender <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
+            <a href="{{ route('board.index') }}" class="text-indigo-600 font-bold text-sm hover:underline">Lihat Board Planning <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></a>
         </div>
+        
         <div class="divide-y divide-slate-50 text-sm">
-            <!-- Contoh Item 1 -->
-            <div class="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 hover:bg-slate-50 transition-colors cursor-pointer group">
-                <div class="flex items-center gap-4 w-full sm:w-auto">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl overflow-hidden relative shrink-0 shadow-sm border border-slate-100">
-                        <div class="absolute inset-0 bg-indigo-600/10 flex items-center justify-center text-indigo-600">
-                            <i class="fa-solid fa-image text-lg"></i>
+            <template x-for="post in upcomingPosts" :key="post.id">
+                <!-- Item Dynamic -->
+                <div class="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 hover:bg-slate-50 transition-colors cursor-pointer group">
+                    <div class="flex items-center gap-4 w-full sm:w-auto">
+                        <div class="w-14 h-14 rounded-2xl overflow-hidden relative shrink-0 shadow-sm border border-slate-100 flex items-center justify-center" :class="getPlatformColor(post.content_type)">
+                            <div class="absolute inset-0 opacity-10 bg-current"></div>
+                            <i class="text-xl" :class="getPlatformIcon(post.content_type)"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <h4 class="font-bold text-slate-800 truncate" x-text="post.title"></h4>
+                            <div class="flex items-center gap-3 mt-1">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                    <i class="fa-solid fa-clock text-[9px]"></i> <span x-text="post.due_date || post.start_date || 'Belum diatur'"></span>
+                                </span>
+                                <span class="px-2 py-0.5 text-[9px] font-black rounded-md uppercase" :class="getPlatformColor(post.content_type)" x-text="post.content_type || 'Konten'"></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="overflow-hidden">
-                        <h4 class="font-bold text-slate-800 truncate">Tips Fullstack Developer Laravel</h4>
-                        <div class="flex items-center gap-3 mt-1">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                                <i class="fa-solid fa-clock text-[9px]"></i> 18:00 WIB
-                            </span>
-                            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-black rounded-md uppercase">Instagram</span>
-                        </div>
+                    <div class="flex items-center gap-6">
+                        <span class="px-3 py-1 text-[10px] font-bold uppercase rounded-lg" :class="getStatusStyle(post.status)" x-text="getStatusName(post.status)"></span>
+                        <a href="{{ route('board.index') }}" class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                     </div>
                 </div>
-                <div class="flex items-center gap-6">
-                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded-lg">Siap Posting</span>
-                    <button class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                </div>
-            </div>
-            
-            <!-- Contoh Item 2 -->
-            <div class="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 hover:bg-slate-50 transition-colors cursor-pointer group">
-                <div class="flex items-center gap-4 w-full sm:w-auto">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl overflow-hidden relative shrink-0 shadow-sm border border-slate-100">
-                        <div class="absolute inset-0 bg-slate-900/10 flex items-center justify-center text-slate-900">
-                            <i class="fa-solid fa-video text-lg"></i>
-                        </div>
+            </template>
+
+            <!-- State Empty / Jika Kosong -->
+            <template x-if="upcomingPosts.length === 0">
+                <div class="p-10 text-center">
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+                        <i class="fa-solid fa-folder-open text-2xl"></i>
                     </div>
-                    <div class="overflow-hidden">
-                        <h4 class="font-bold text-slate-800 truncate">VLOG: Sehari Belajar Laravel 11</h4>
-                        <div class="flex items-center gap-3 mt-1">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                                <i class="fa-solid fa-clock text-[9px]"></i> 21:00 WIB
-                            </span>
-                            <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[9px] font-black rounded-md uppercase">TikTok</span>
-                        </div>
-                    </div>
+                    <p class="text-slate-500 font-bold">Belum ada konten terjadwal</p>
+                    <p class="text-xs text-slate-400 mt-1">Pastikan Anda sudah membuat konten di Board Planning dan menautkan database dengan benar.</p>
                 </div>
-                <div class="flex items-center gap-6">
-                    <span class="px-3 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold uppercase rounded-lg">Menunggu Review</span>
-                    <button class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                </div>
-            </div>
+            </template>
         </div>
     </div>
 </div>
 @endsection
 
 @push('scripts')
+<!-- Tambahkan CDN Chart.js agar objek Chart dapat dikenali -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
+    // FUNGSI UNTUK ALPINE JS TERINTEGRASI DB
+    function dashboardData() {
+        return {
+            plannings: [],
+            upcomingPosts: [],
+            init() {
+                try {
+                    // Ambil raw text dari Laravel
+                    let rawDataText = document.getElementById('plannings-data').textContent;
+                    let rawData = JSON.parse(rawDataText);
+                    
+                    this.plannings = rawData;
+                    
+                    // DEBUGGING: Cek apakah data masuk dari database
+                    console.log("🔥 Data dari Database:", this.plannings);
+
+                    // Filter yang bukan published, lalu urutkan berdasarkan due_date terdekat
+                    const priorityOrder = { urgent: 0, high: 1, normal: 2, low: 3 };
+                    this.upcomingPosts = this.plannings
+                        .filter(p => p.status !== 'published')
+                        .sort((a, b) => {
+                            const pa = priorityOrder[a.priority] ?? 99;
+                            const pb = priorityOrder[b.priority] ?? 99;
+                            if (pa !== pb) return pa - pb;
+                            let dateA = new Date(a.due_date || a.start_date || '9999-12-31');
+                            let dateB = new Date(b.due_date || b.start_date || '9999-12-31');
+                            return dateA - dateB;
+                        });
+                        
+                    console.log("📌 Data Konten Terjadwal:", this.upcomingPosts);
+
+                } catch(e) {
+                    console.error('Data plannings tidak ditemukan atau error parsing.', e);
+                }
+            },
+            getStatusStyle(status) {
+                const styles = {
+                    'backlog': 'bg-slate-100 text-slate-700',
+                    'progress': 'bg-indigo-100 text-indigo-700',
+                    'review': 'bg-rose-100 text-rose-700',
+                    'revisi': 'bg-amber-100 text-amber-700',
+                    'hold_on': 'bg-orange-100 text-orange-700',
+                    'approved': 'bg-blue-100 text-blue-700'
+                };
+                return styles[status] || 'bg-slate-100 text-slate-700';
+            },
+            getStatusName(status) {
+                const names = {
+                    'backlog': 'Backlog',
+                    'progress': 'In Progress',
+                    'review': 'In Review',
+                    'revisi': 'Revisi',
+                    'hold_on': 'Hold On',
+                    'approved': 'Approved'
+                };
+                return names[status] || status;
+            },
+            getPlatformIcon(type) {
+                if(!type) return 'fa-solid fa-image';
+                const t = type.toLowerCase();
+                if(t.includes('tiktok')) return 'fa-brands fa-tiktok';
+                if(t.includes('instagram') || t.includes('reels') || t.includes('feed') || t.includes('story')) return 'fa-brands fa-instagram';
+                return 'fa-solid fa-image';
+            },
+            getPlatformColor(type) {
+                if(!type) return 'text-indigo-600 bg-indigo-50';
+                const t = type.toLowerCase();
+                if(t.includes('tiktok')) return 'text-slate-900 bg-slate-100';
+                if(t.includes('instagram') || t.includes('reels') || t.includes('feed') || t.includes('story')) return 'text-pink-600 bg-pink-50';
+                return 'text-indigo-600 bg-indigo-50';
+            }
+        };
+    }
+
     // Inisialisasi Grafik Performa
     const ctx = document.getElementById('performanceChart').getContext('2d');
     

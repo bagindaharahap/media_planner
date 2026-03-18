@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Planning;
+use App\Models\Note; // <-- WAJIB DITAMBAHKAN
 use Illuminate\Http\Request;
 
 class PlanningController extends Controller
@@ -10,7 +11,6 @@ class PlanningController extends Controller
     // Menampilkan halaman board
     public function index()
     {
-        // Ambil semua data planning dari database
         $plannings = Planning::all();
         return view('boardplanning.indexboard', compact('plannings'));
     }
@@ -22,7 +22,7 @@ class PlanningController extends Controller
         return response()->json(['success' => true, 'data' => $planning]);
     }
 
-    // Mengupdate data (Update) - Termasuk update status saat drag & drop
+    // Mengupdate data (Update)
     public function update(Request $request, $id)
     {
         $planning = Planning::findOrFail($id);
@@ -38,21 +38,14 @@ class PlanningController extends Controller
         return response()->json(['success' => true]);
     }
 
-
-    // Method baru untuk menangani File Upload dari Modal
+    // Method untuk menangani File Upload
     public function uploadMedia(Request $request)
     {
-        // Validasi dan simpan file
         if ($request->hasFile('media_file')) {
             $file = $request->file('media_file');
-            
-            // Format nama: timestamp_namaasli.ext agar tidak konflik
             $filename = time() . '_' . $file->getClientOriginalName();
-            
-            // Simpan ke storage/app/public/media_plannings
             $path = $file->storeAs('public/media_plannings', $filename);
 
-            // Kembalikan URL aset publik ke frontend
             return response()->json([
                 'success' => true,
                 'file_url' => asset('storage/media_plannings/' . $filename)
@@ -60,5 +53,16 @@ class PlanningController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'File tidak terdeteksi'], 400);
+    }
+
+    // ==========================================
+    // FUNGSI BARU UNTUK HALAMAN KALENDER
+    // ==========================================
+    public function calendar() 
+    {
+        $plannings = Planning::all(); 
+        $notes = Note::all(); // Mengambil data notes dari database
+        
+        return view('calendarnotes.calendarnotesindex', compact('plannings', 'notes'));
     }
 }
