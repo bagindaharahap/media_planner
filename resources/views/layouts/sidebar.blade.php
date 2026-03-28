@@ -3,7 +3,7 @@
     <div class="p-4 md:p-8">
         <div class="flex items-center gap-2 text-indigo-600">
             <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-200">
-                <i class="fa-solid fa-chart-line text-lg"></i>
+                <i class="fa-solid fa-pen-ruler text-lg"></i>
             </div>
             <span class="text-xl font-black tracking-tighter hidden md:block">Content Planner</span>
         </div>

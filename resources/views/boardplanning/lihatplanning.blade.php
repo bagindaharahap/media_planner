@@ -217,7 +217,7 @@ x-transition:enter-end="opacity-100 scale-100 translate-y-0"
 
     <!-- Footer -->
     <div class="px-8 py-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">PlannerX Content Management System</p>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Content Planner Content Management System</p>
         <button @click="showLihatModal = false" class="px-8 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
             Tutup Detail
         </button>

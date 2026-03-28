@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dasbor Media Planner - PlannerX')
+@section('title', 'Dasbor Media Planner - Content Planner')
 
 @section('content')
 

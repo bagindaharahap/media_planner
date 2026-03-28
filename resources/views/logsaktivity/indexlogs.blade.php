@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Logs Activity - PlannerX')
+@section('title', 'Logs Activity - Content Planner')
 
 @section('content')
 <div class="space-y-6">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kalender Konten - PlannerX')
+@section('title', 'Kalender Konten - Content Planner')
 
 @section('content')
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Board Planning - PlannerX')
+@section('title', 'Board Planning - Content Planner')
 
 @section('content')
 

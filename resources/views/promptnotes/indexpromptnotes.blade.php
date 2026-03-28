@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Prompt Notes - PlannerX')
+@section('title', 'Prompt Notes - Content Planner')
 
 @section('content')
 

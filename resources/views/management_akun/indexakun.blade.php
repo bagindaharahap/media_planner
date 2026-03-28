@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Management Akun - PlannerX')
+@section('title', 'Management Akun - Content Planner')
 
 @section('content')
 
@@ -92,7 +92,7 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-slate-800">Management Akun</h1>
-            <p class="text-sm text-slate-500 font-medium">Kelola hak akses, role, dan anggota tim PlannerX.</p>
+            <p class="text-sm text-slate-500 font-medium">Kelola hak akses, role, dan anggota tim Content Planner.</p>
         </div>
         <button @click="showCreateModal = true; resetPasswordVisibility()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
             <i class="fa-solid fa-user-plus text-xs"></i>

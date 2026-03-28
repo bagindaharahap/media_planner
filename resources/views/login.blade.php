@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk - PlannerX</title>
+    <title>Masuk - Content Planner</title>
     
     <!-- Tailwind CSS & Font Awesome -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +38,7 @@
                     <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-600 shadow-lg">
                         <i class="fa-solid fa-rocket text-xl"></i>
                     </div>
-                    <span class="text-2xl font-black tracking-tighter">PlannerX</span>
+                    <span class="text-2xl font-black tracking-tighter">Content Planner</span>
                 </div>
 
                 <div>
@@ -66,7 +66,7 @@
                 <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
                     <i class="fa-solid fa-rocket text-xl"></i>
                 </div>
-                <span class="text-2xl font-black tracking-tighter text-indigo-600">PlannerX</span>
+                <span class="text-2xl font-black tracking-tighter text-indigo-600">Content Planner</span>
             </div>
 
             <!-- Teks Header Form (Desktop) -->
