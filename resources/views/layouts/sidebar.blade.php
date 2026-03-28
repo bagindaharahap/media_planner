@@ -26,7 +26,7 @@
                 :class="openPosts ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-slate-50'"
             >
                 <i class="fa-solid fa-calendar-check text-lg md:text-sm"></i>
-                <span class="font-semibold text-sm hidden md:block flex-1 text-left text-sm">Jadwal Konten</span>
+                <span class="font-semibold text-sm hidden md:block flex-1 text-left">Jadwal Konten</span>
                 <i 
                     class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300 hidden md:block" 
                     :class="openPosts ? 'rotate-180' : ''"
@@ -48,11 +48,31 @@
                 <a href="{{ route('board.index') }}" class="block px-4 py-2 text-xs font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-all border-l-2 border-transparent hover:border-indigo-400">
                     Board Content Planning
                 </a>
+                
                 <a href="{{ route('calendar.index') }}" class="block px-4 py-2 text-xs font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-all border-l-2 border-transparent hover:border-indigo-400">
                     Calender Note
                 </a>
             </div>
         </div>
+
+        <!-- ========================================== -->
+        <!-- MENU BARU: PROMPT NOTE                     -->
+        <!-- ========================================== -->
+        <a href="{{ route('prompt.index') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all">
+            <i class="fa-solid fa-pen-to-square text-lg md:text-sm"></i>
+            <span class="font-semibold text-sm hidden md:block">Prompt Note</span>
+        </a>
+
+        <!-- ========================================== -->
+        <!-- VALIDASI ROLE UNTUK MENU MANAGEMENT AKUN   -->
+        <!-- Hanya Admin yang bisa melihat menu ini     -->
+        <!-- ========================================== -->
+        @if(Auth::check() && Auth::user()->role === 'Admin')
+            <a href="{{ route('users.index') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 {{ request()->routeIs('users.index') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
+                <i class="fa-solid fa-users-gear text-lg md:text-sm"></i>
+                <span class="font-semibold text-sm hidden md:block">Management Akun</span>
+            </a>
+        @endif
         
         <div class="pt-8 hidden md:block">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2">Akun</p>
@@ -72,4 +92,28 @@
             </a>
         </div>
     </nav>
+
+    <!-- User Info & Logout Section -->
+    <div class="p-3 md:p-6 border-t border-slate-200 mt-auto">
+        <div class="hidden md:block">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-sm uppercase">
+                    {{ substr(Auth::user()->name ?? 'U', 0, 2) }}
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-sm text-slate-800">{{ Auth::user()->name ?? 'User' }}</p>
+                    <p class="text-xs text-slate-500">{{ Auth::user()->role ?? 'Role' }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logout Button -->
+        <form action="{{ route('logout') }}" method="POST" class="w-full">
+            @csrf
+            <button type="submit" class="w-full flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                <i class="fa-solid fa-arrow-right-from-bracket text-lg md:text-sm"></i>
+                <span class="font-semibold text-sm hidden md:block">Keluar</span>
+            </button>
+        </form>
+    </div>
 </aside>

@@ -146,18 +146,10 @@
                                 <i class="fa-solid fa-times"></i>
                             </button>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <!-- Pilih Nama -->
+                                <!-- Input Nama -->
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-bold text-slate-400 uppercase">Nama</label>
-                                    <select x-model="assign.name" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-sm font-bold text-slate-700">
-                                        <option value="">Pilih...</option>
-                                        <template x-for="name in userOptions" :key="name">
-                                            <option :value="name" x-text="name" :selected="assign.name == name"></option>
-                                        </template>
-                                        <template x-if="assign.name && !userOptions.includes(assign.name)">
-                                            <option :value="assign.name" x-text="assign.name" selected></option>
-                                        </template>
-                                    </select>
+                                    <input type="text" x-model="assign.name" placeholder="Masukkan nama anggota..." class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                                 </div>
                                 
                                 <!-- Multi Select Jobdesk -->
@@ -357,7 +349,7 @@
                     </div>
 
                     <!-- Kolom Kanan: Catatan Revisi (Hanya tampil di Review ke atas) -->
-                    <div class="space-y-4" x-show="!['backlog', 'progress'].includes(editingPlanning.status)" x-transition>
+                    <div class="space-y-4" x-show="!['draft', 'progress'].includes(editingPlanning.status)" x-transition>
                         <div class="flex items-center gap-2 ml-1">
                             <i class="fa-solid fa-clipboard-check text-rose-500 text-xs"></i>
                             <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Catatan Revisi / Feedback</label>

@@ -10,7 +10,7 @@
 </script>
 
 <div class="space-y-8" x-data="dashboardData()">
-    <!-- Barisan Kartu Statistik (Stat Cards) -->
+    <!-- Barisan Kartu Statistik (Stat Cards) Utama -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Engagement Rate -->
         <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm transition hover:-translate-y-1">
@@ -57,6 +57,72 @@
             </div>
             <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Konten Terjadwal</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1" x-text="upcomingPosts.length + ' Post'">0 Post</h3>
+        </div>
+    </div>
+
+    <!-- KARTU STATUS BOARD PLANNING BARU -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        <!-- Draft (Backlog) -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-slate-400"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Draft</p>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800" x-text="String(statusCounts.backlog).padStart(2, '0')">00</h3>
+        </div>
+
+        <!-- In Progress -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">In Progress</p>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800" x-text="String(statusCounts.progress).padStart(2, '0')">00</h3>
+        </div>
+
+        <!-- In Review -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm shadow-rose-500/50"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">In Review</p>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800" x-text="String(statusCounts.review).padStart(2, '0')">00</h3>
+        </div>
+
+        <!-- Revisi -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm shadow-amber-400/50"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Revisi</p>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800" x-text="String(statusCounts.revisi).padStart(2, '0')">00</h3>
+        </div>
+
+        <!-- Hold On -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Hold On</p>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800" x-text="String(statusCounts.hold_on).padStart(2, '0')">00</h3>
+        </div>
+
+        <!-- Approved -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Approved</p>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800" x-text="String(statusCounts.approved).padStart(2, '0')">00</h3>
+        </div>
+
+        <!-- Published -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Published</p>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800" x-text="String(statusCounts.published).padStart(2, '0')">00</h3>
         </div>
     </div>
 
@@ -176,6 +242,9 @@
         return {
             plannings: [],
             upcomingPosts: [],
+            // Menambahkan state penampung jumlah status
+            statusCounts: { backlog: 0, progress: 0, review: 0, revisi: 0, hold_on: 0, approved: 0, published: 0 },
+            
             init() {
                 try {
                     // Ambil raw text dari Laravel
@@ -184,8 +253,16 @@
                     
                     this.plannings = rawData;
                     
+                    // Hitung jumlah untuk masing-masing status
+                    this.plannings.forEach(p => {
+                        if(this.statusCounts[p.status] !== undefined) {
+                            this.statusCounts[p.status]++;
+                        }
+                    });
+                    
                     // DEBUGGING: Cek apakah data masuk dari database
                     console.log("🔥 Data dari Database:", this.plannings);
+                    console.log("📊 Status Counts:", this.statusCounts);
 
                     // Filter yang bukan published, lalu urutkan berdasarkan due_date terdekat
                     const priorityOrder = { urgent: 0, high: 1, normal: 2, low: 3 };
@@ -219,7 +296,7 @@
             },
             getStatusName(status) {
                 const names = {
-                    'backlog': 'Backlog',
+                    'backlog': 'Draft',
                     'progress': 'In Progress',
                     'review': 'In Review',
                     'revisi': 'Revisi',

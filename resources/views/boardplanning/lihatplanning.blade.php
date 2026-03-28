@@ -51,7 +51,7 @@ x-transition:enter-end="opacity-100 scale-100 translate-y-0"
                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Status</p>
                 <div class="flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full animate-pulse" :class="{
-                        'bg-slate-400': viewingPlanning.status === 'backlog',
+                        'bg-slate-400': viewingPlanning.status === 'draft',
                         'bg-indigo-600': viewingPlanning.status === 'progress',
                         'bg-rose-500': viewingPlanning.status === 'review',
                         'bg-amber-500': viewingPlanning.status === 'revisi',
@@ -190,7 +190,7 @@ x-transition:enter-end="opacity-100 scale-100 translate-y-0"
                 </div>
 
                 <!-- Kolom Kanan: Catatan Revisi (Hanya tampil di Review ke atas) -->
-                <div class="space-y-4" x-show="!['backlog', 'progress'].includes(viewingPlanning.status)" x-transition>
+                <div class="space-y-4" x-show="!['draft', 'progress'].includes(viewingPlanning.status)" x-transition>
                     <div class="flex items-center gap-2 px-1">
                         <i class="fa-solid fa-clipboard-check text-rose-500 text-xs"></i>
                         <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Catatan Revisi / Feedback</h4>

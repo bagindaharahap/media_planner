@@ -18,7 +18,25 @@ class PlanningController extends Controller
     // Menyimpan data baru (Create)
     public function store(Request $request)
     {
-        $planning = Planning::create($request->all());
+        $data = $request->only([
+            'title', 'status', 'content_type', 'description',
+            'start_date', 'due_date', 'priority',
+            'assigned', 'references', 'media_link', 'revision_note'
+        ]);
+
+        // Pastikan assigned dan references tersimpan sebagai JSON
+        if (isset($data['assigned']) && is_array($data['assigned'])) {
+            // Bersihkan field customJob dan customTool yang tidak perlu disimpan
+            $data['assigned'] = array_map(function($a) {
+                return [
+                    'name' => $a['name'] ?? '',
+                    'jobdesks' => $a['jobdesks'] ?? [],
+                    'tools' => $a['tools'] ?? [],
+                ];
+            }, $data['assigned']);
+        }
+
+        $planning = Planning::create($data);
         return response()->json(['success' => true, 'data' => $planning]);
     }
 
@@ -26,7 +44,25 @@ class PlanningController extends Controller
     public function update(Request $request, $id)
     {
         $planning = Planning::findOrFail($id);
-        $planning->update($request->all());
+
+        $data = $request->only([
+            'title', 'status', 'content_type', 'description',
+            'start_date', 'due_date', 'priority',
+            'assigned', 'references', 'media_link', 'revision_note'
+        ]);
+
+        // Bersihkan field customJob dan customTool jika ada
+        if (isset($data['assigned']) && is_array($data['assigned'])) {
+            $data['assigned'] = array_map(function($a) {
+                return [
+                    'name' => $a['name'] ?? '',
+                    'jobdesks' => $a['jobdesks'] ?? [],
+                    'tools' => $a['tools'] ?? [],
+                ];
+            }, $data['assigned']);
+        }
+
+        $planning->update($data);
         return response()->json(['success' => true, 'data' => $planning]);
     }
 

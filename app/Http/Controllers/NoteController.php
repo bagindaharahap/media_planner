@@ -28,7 +28,7 @@ class NoteController extends Controller
     // Menampilkan detail catatan
     public function show(Note $note)
     {
-        return view('calendernotes.lihatnotes', compact('note'));
+        return response()->json($note);
     }
 
     // Form edit catatan
@@ -40,18 +40,17 @@ class NoteController extends Controller
     // Mengupdate catatan
     public function update(Request $request, Note $note)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'date' => 'required|date',
-        ]);
-
+        // 1. Update data (sesuaikan dengan validasi Anda sebelumnya)
         $note->update($request->all());
 
-        if ($request->wantsJson()) {
-            return response()->json(['message' => 'Catatan diperbarui', 'note' => $note]);
+        // 2. CEK TIPE REQUEST:
+        // Jika request datang dari AJAX Kalender (Fetch API yang memiliki header 'Accept: application/json')
+        if ($request->expectsJson()) {
+            return response()->json(['note' => $note]);
         }
 
-        return redirect()->route('calendar.notes.show', $note)->with('success', 'Catatan diperbarui');
+        // 3. Jika request datang dari Form HTML biasa (tombol submit di editnotes.blade.php)
+        return redirect()->route('calendar.index')->with('success', 'Catatan berhasil diperbarui!');
     }
 
     // Menghapus catatan

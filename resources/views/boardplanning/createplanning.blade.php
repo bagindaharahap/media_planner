@@ -42,9 +42,13 @@
                 <div class="space-y-2">
                     <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Status</label>
                     <select x-model="planning.status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all outline-none">
-                        <template x-for="status in allStatuses" :key="status.id">
-                            <option :value="status.id" x-text="status.name"></option>
-                        </template>
+                        <option value="backlog">Backlog</option>
+                        <option value="progress">In Progress</option>
+                        <option value="review">In Review</option>
+                        <option value="revisi">Revisi</option>
+                        <option value="hold_on">Hold On</option>
+                        <option value="approved">Approved</option>
+                        <option value="published">Published</option>
                     </select>
                 </div>
                 <div class="md:col-span-3 space-y-2">
@@ -132,15 +136,10 @@
                             </button>
                             
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <!-- Pilih Nama -->
+                                <!-- Input Nama -->
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama</label>
-                                    <select x-model="assign.name" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-sm font-bold text-slate-700">
-                                        <option value="">Pilih Anggota...</option>
-                                        <template x-for="name in userOptions" :key="name">
-                                            <option :value="name" x-text="name"></option>
-                                        </template>
-                                    </select>
+                                    <input type="text" x-model="assign.name" placeholder="Masukkan nama anggota..." class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                                 </div>
 
                                 <!-- Multi Select Jobdesk -->

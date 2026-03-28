@@ -66,6 +66,7 @@
             </div>
         </div>
 
+        <!-- ... baris kode sebelumnya (Header & Konten) tetap sama ... -->
         <!-- Footer -->
         <div class="px-8 py-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
             <button 
@@ -84,10 +85,11 @@
                     Tutup
                 </button>
                 <button 
-                    @click="window.location.href = `/calendar/notes/${viewingNote.id}/edit`"
+                    type="button"
+                    @click="openEditNote(viewingNote)"
                     class="px-8 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center gap-2"
                 >
-                    <i class="fa-solid fa-pen"></i>
+                    <i class="fa-solid fa-pen-to-square"></i>
                     Edit Catatan
                 </button>
             </div>

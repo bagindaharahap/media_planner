@@ -4,9 +4,36 @@
 
 @section('content')
 
-<!-- Menyimpan data dari Laravel ke dalam tag script -->
+@if(session('success'))
+    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-2xl mb-6 flex items-center justify-between shadow-sm relative z-10 transition-all duration-500" x-transition:leave="opacity-0 translate-y-[-10px]">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-check-circle text-emerald-500 text-xl"></i>
+            <span class="font-semibold">{{ session('success') }}</span>
+        </div>
+        <button @click="show = false" class="text-emerald-400 hover:text-emerald-600 transition-colors">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-2xl mb-6 shadow-sm relative z-10">
+        <div class="flex items-center gap-3 mb-2">
+            <i class="fa-solid fa-exclamation-circle text-rose-500 text-xl"></i>
+            <span class="font-semibold">Terjadi kesalahan:</span>
+        </div>
+        <ul class="list-disc list-inside text-sm space-y-1">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <script id="plannings-data" type="application/json">
     {!! json_encode($plannings ?? []) !!}
+</script>
+<script id="notes-data" type="application/json">
+    {!! json_encode($notes ?? []) !!}
 </script>
 
 <div
@@ -21,7 +48,7 @@ x-data="{
     showCreateChoiceModal: false,
     isWritingNote: false,
     selectedDate: '',
-    csrfToken: document.querySelector('meta[name=&quot;csrf-token&quot;]').getAttribute('content'),
+    csrfToken: document.querySelector('meta[name=csrf-token]').getAttribute('content'),
     currentYear: new Date().getFullYear(),
     currentMonth: new Date().getMonth(),
     viewingPlanning: {},
@@ -30,13 +57,11 @@ x-data="{
     editingNote: {},
     loadingNotes: false,
 
-    // Array penampung data Notes
     allNotes: [
         { id: 'n1', title: 'Ide Konten Ramadhan', content: 'Video resep takjil 30 detik.', color: 'bg-emerald-500', date: '2026-03-12' },
         { id: 'n2', title: 'Reminder Live', content: 'Jam 19:00 WIB di TikTok.', color: 'bg-rose-500', date: '2026-03-12' }
     ],
 
-    // Objek untuk planning baru
     planning: {
         status: 'backlog',
         title: '',
@@ -52,7 +77,6 @@ x-data="{
         references: ['']
     },
 
-    // Objek untuk notes baru
     noteData: {
         title: '',
         content: '',
@@ -217,7 +241,6 @@ x-data="{
             tempDays.push({ number: i, date: dateStr, currentMonth: false, weekend: false });
         }
 
-        /* --- ALGORITMA PENYEJAJARAN & PENGGABUNGAN KARTU KONTEN --- */
         let daySlots = {};
         tempDays.forEach(day => {
             daySlots[day.date] = [];
@@ -228,7 +251,6 @@ x-data="{
             return new Date(p[0], p[1] - 1, p[2]);
         };
 
-        // Urutkan task berdasarkan prioritas lalu deadline terdekat
         let sortedTasks = this.getSortedTasksWithDates();
 
         sortedTasks.forEach(task => {
@@ -265,7 +287,6 @@ x-data="{
         tempDays.forEach(day => {
             let slots = daySlots[day.date] || [];
             for(let i=0; i<slots.length; i++){
-                // Masukkan placeholder tak terlihat agar kartu tetap sejajar jika di hari tersebut tidak ada event
                 if(!slots[i]) slots[i] = { is_placeholder: true, id: 'dummy-'+day.date+'-'+i };
             }
             day.tasks = slots;
@@ -307,6 +328,7 @@ x-data="{
         } catch(e) {
             console.error('Error simpan catatan:', e);
         } finally {
+            AppPopup.success('Berhasil', 'Catatan berhasil dibuat');
             this.showCreateChoiceModal = false;
             this.isWritingNote = false;
             this.noteData = { title: '', content: '', color: 'bg-indigo-500', date: '' };
@@ -318,7 +340,14 @@ x-data="{
         this.showLihatNoteModal = true;
     },
 
+    openEditNote(note) {
+        this.editingNote = JSON.parse(JSON.stringify(note));
+        this.showEditNoteModal = true;
+        this.showLihatNoteModal = false;
+    },
+
     async updateNote() {
+        AppPopup.success('Berhasil', 'Catatan berhasil diperbarui');
         if (!this.editingNote?.id) return;
         try {
             const res = await fetch(`/notes/${this.editingNote.id}`, {
@@ -345,19 +374,32 @@ x-data="{
 
     async deleteNote(id) {
         if (!id) return;
-        try {
-            const res = await fetch(`/notes/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': this.csrfToken
+
+        AppPopup.confirmDelete(
+            'Hapus Catatan',
+            'Yakin ingin menghapus catatan ini?',
+            async () => {
+                this.showLihatNoteModal = false;
+                try {
+                    const res = await fetch(`/notes/${id}`, {
+                        method: 'DELETE',
+                        headers: { 
+                            'Accept': 'application/json', 
+                            'X-CSRF-TOKEN': this.csrfToken 
+                        }
+                    });
+
+                    if (!res.ok) throw new Error('Gagal menghapus catatan');
+
+                    this.allNotes = this.allNotes.filter(n => n.id !== id);
+
+                    AppPopup.success('Berhasil', 'Catatan berhasil dihapus');
+
+                } catch(e) { 
+                    console.error('Error hapus catatan:', e); 
                 }
-            });
-            if (!res.ok) throw new Error('Gagal menghapus catatan');
-            this.allNotes = this.allNotes.filter(n => n.id !== id);
-        } catch(e) {
-            console.error('Error hapus catatan:', e);
-        }
+            }
+        );
     },
 
     changeMonth(index) {
@@ -494,7 +536,7 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
 <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-200/20 blur-[100px] pointer-events-none"></div>
 <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-200/20 blur-[100px] pointer-events-none"></div>
 
-<!-- Header Kalender (Perbaikan: Menurunkan z-index dari z-30 menjadi z-[3] agar tidak menimpa navbar utama) -->
+<!-- Header Kalender -->
 <div class="flex items-center justify-between px-8 py-6 border-b border-slate-200 bg-white/60 backdrop-blur-xl relative z-[3]">
     <div class="flex items-center gap-4">
         <button @click="goToToday()" class="px-5 py-2 bg-white border border-slate-200 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm">
@@ -544,14 +586,14 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
     </div>
 </div>
 
-<!-- Header Nama Hari (Perbaikan: Menurunkan z-index dari z-20 menjadi z-[2]) -->
+<!-- Header Nama Hari -->
 <div class="grid grid-cols-7 border-b-2 border-slate-200 bg-slate-50/80 relative z-[2] text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">
     <template x-for="dayName in ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']">
         <div class="py-4 text-center border-r border-slate-200" x-text="dayName"></div>
     </template>
 </div>
 
-<!-- Grid Kalender Dinamis (Perbaikan: Menurunkan z-index dari z-10 menjadi z-[1]) -->
+<!-- Grid Kalender Dinamis -->
 <div class="flex-1 grid grid-cols-7 bg-transparent relative z-[1]">
     <template x-for="(day, index) in days" :key="index">
         <div 
@@ -572,12 +614,10 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
                 <!-- RENDER PLANNING -->
                 <template x-for="task in day.tasks" :key="task.id || Math.random()">
                     <div class="w-full">
-                        <!-- Placeholder tak terlihat untuk menjaga vertical alignment agar sejajar rapi dari minggu ke minggu -->
                         <template x-if="task.is_placeholder">
                             <div class="h-[42px] w-full invisible"></div>
                         </template>
 
-                        <!-- Kartu Planning -->
                         <template x-if="!task.is_placeholder">
                             <div 
                                 @click.stop="openLihat(task)"
@@ -641,8 +681,9 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
 @include('boardplanning.editplanning')
 @include('calendernotes.createnotes')
 @include('calendernotes.partials.lihatnotes')
+@include('calendernotes.editnotes')
 
-<!-- Modal Buat Planning (Sederhana untuk demo Kalender) -->
+<!-- Modal Buat Planning -->
 <div
     x-show="showCreateModal"
     x-cloak

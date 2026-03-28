@@ -12,18 +12,25 @@
 <!-- Wrapper utama dengan Alpine.js untuk state Global -->
 <div 
     x-data="{ 
+        userRole: '{{ Auth::user()->role ?? 'Content Planner' }}',
         selectedTasks: [],
         showCreateModal: false,
         showEditModal: false,
         showLihatModal: false,
         showDeleteModal: false,
+        
+        // Modal State
         showMediaWarningModal: false,
+        showRoleWarningModal: false,
+        showPublishConfirmModal: false,
+
         deleteTarget: null,
         taskToDelete: null,
         taskNeedsMedia: null,
+        taskToPublish: null,
 
         allStatuses: [
-            { id: 'backlog', name: 'Backlog' },
+            { id: 'backlog', name: 'Draft' },
             { id: 'progress', name: 'In Progress' },
             { id: 'review', name: 'In Review' },
             { id: 'revisi', name: 'Revisi' },
@@ -35,7 +42,6 @@
         tasks: [],
 
         // --- FALLBACK VARIABLES UNTUK SORTABLE.JS ---
-        // Mencegah Alpine.js melempar ReferenceError saat elemen ditarik keluar dari konteks x-for
         task: { assigned: [] }, 
         assignee: {},
         idx: 0,
@@ -54,7 +60,6 @@
             assigned: [], references: []
         },
 
-        // PENTING: Harus ada inisialisasi default agar x-for di modal lihatplanning tidak membuat Alpine JS Crash!
         viewingPlanning: { assigned: [], references: [] },
 
         userOptions: ['Dina', 'Adelsa', 'Lisa', 'Putri'],
@@ -63,13 +68,11 @@
         contentTypeOptions: ['TikTok', 'Reels', 'Feed', 'Story'],
         priorityOrder: { urgent: 0, high: 1, normal: 2, low: 3 },
 
-        /* Helper untuk mengambil Token CSRF Laravel */
         getCsrfToken() {
             const meta = document.querySelector('meta[name=\'csrf-token\']');
             return meta ? meta.getAttribute('content') : '';
         },
 
-        /* Helper untuk mendapatkan tanggal hari ini (Format YYYY-MM-DD) */
         getTodayDate() {
             const today = new Date();
             const yyyy = today.getFullYear();
@@ -79,17 +82,14 @@
         },
 
         init() {
-            // PENTING: Parsing dan sanitasi data secara dinamis (Mencegah error ketika data JSON DB rusak/berupa string)
             try {
                 let rawData = JSON.parse(document.getElementById('plannings-data').textContent);
                 this.tasks = rawData.map(task => {
-                    // Paksa assigned menjadi Array
                     if (typeof task.assigned === 'string') {
                         try { task.assigned = JSON.parse(task.assigned); } catch(e) { task.assigned = []; }
                     }
                     if (!Array.isArray(task.assigned)) task.assigned = [];
 
-                    // Paksa references menjadi Array
                     if (typeof task.references === 'string') {
                         try { task.references = JSON.parse(task.references); } catch(e) { task.references = []; }
                     }
@@ -105,7 +105,6 @@
         },
 
         openLihat(task) {
-            // Gunakan deep copy agar data modal tidak terikat referensi langsung ke tasks
             this.viewingPlanning = JSON.parse(JSON.stringify(task));
             this.showLihatModal = true;
         },
@@ -143,37 +142,23 @@
             });
         },
 
-        /* --- FUNGSI CREATE (POST KE DATABASE) --- */
         async executeCreate() {
             try {
-                // --- VALIDASI TANGGAL ---
                 let today = this.getTodayDate();
-                
-                // Jika tidak diisi, otomatis gunakan hari ini
-                if (!this.planning.start_date) {
-                    this.planning.start_date = today;
-                }
-                
-                // Validasi agar tidak mundur ke masa lalu (Back-up Security)
+                if (!this.planning.start_date) this.planning.start_date = today;
                 if (this.planning.start_date < today) {
                     alert('Tanggal mulai tidak boleh kurang dari hari ini!');
                     return;
                 }
-                // ------------------------
 
                 let response = await fetch('/board-planning', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': this.getCsrfToken()
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.getCsrfToken() },
                     body: JSON.stringify(this.planning)
                 });
                 let result = await response.json();
                 
                 if(result.success) {
-                    // Sanitasi data baru sebelum masuk ke array
                     let newTask = result.data;
                     if(typeof newTask.assigned === 'string') newTask.assigned = JSON.parse(newTask.assigned);
                     if(typeof newTask.references === 'string') newTask.references = JSON.parse(newTask.references);
@@ -181,28 +166,20 @@
                     this.tasks.push(newTask);
                     this.sortAllTasks();
                     this.showCreateModal = false;
-                    /* Reset form */
                     this.planning = { 
                         status: 'backlog', title: '', content_type: 'TikTok', description: '',
                         start_date: '', due_date: '', priority: 'normal', media_link: '', revision_note: '',
                         assigned: [{ name: '', jobdesks: [], tools: [] }], references: [''] 
                     };
                 }
-            } catch (error) {
-                console.error('Error saving:', error);
-            }
+            } catch (error) { console.error('Error saving:', error); }
         },
 
-        /* --- FUNGSI UPDATE (PUT KE DATABASE) --- */
         async executeUpdate() {
             try {
                 let response = await fetch(`/board-planning/${this.editingPlanning.id}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': this.getCsrfToken()
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.getCsrfToken() },
                     body: JSON.stringify(this.editingPlanning)
                 });
                 let result = await response.json();
@@ -219,43 +196,34 @@
                     }
                     this.showEditModal = false;
                 }
-            } catch (error) {
-                console.error('Error updating:', error);
-            }
+            } catch (error) { console.error('Error updating:', error); }
         },
 
-        /* --- FUNGSI DELETE (DELETE KE DATABASE) --- */
         async executeDelete() {
             try {
                 if (this.deleteTarget === 'single') {
                     let response = await fetch(`/board-planning/${this.taskToDelete}`, {
                         method: 'DELETE',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': this.getCsrfToken()
-                        }
+                        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': this.getCsrfToken() }
                     });
                     let result = await response.json();
-                    
                     if(result.success) {
-            this.tasks = this.tasks.filter(t => t.id !== this.taskToDelete);
-            this.sortAllTasks();
+                        this.tasks = this.tasks.filter(t => t.id !== this.taskToDelete);
+                        this.sortAllTasks();
                     }
                 } else {
-                    /* Logika Hapus Massal (Bulk Delete) */
                     for(let id of this.selectedTasks) {
                         await fetch(`/board-planning/${id}`, {
                             method: 'DELETE',
                             headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': this.getCsrfToken() }
                         });
                     }
-            this.tasks = this.tasks.filter(t => !this.selectedTasks.includes(t.id));
-            this.sortAllTasks();
+                    this.tasks = this.tasks.filter(t => !this.selectedTasks.includes(t.id));
+                    this.sortAllTasks();
                     this.selectedTasks = [];
                 }
-            } catch (error) {
-                console.error('Error deleting:', error);
-            } finally {
+            } catch (error) { console.error('Error deleting:', error); } 
+            finally {
                 this.showDeleteModal = false;
                 this.taskToDelete = null;
             }
@@ -288,7 +256,24 @@
             return priorityBadges[priority] || 'bg-slate-100 text-slate-500';
         },
 
-        /* --- Inisialisasi Sortable dan UPDATE DATABASE Saat Drag & Drop --- */
+        /* Fungsi helper untuk membatalkan perpindahan visual card di Alpine.js */
+        revertDOM(task) {
+            let originalStatus = task.status;
+            task.status = 'refreshing';
+            setTimeout(() => { task.status = originalStatus; }, 50);
+        },
+
+        /* Fungsi eksekusi Update Database saat card berhasil dipindah */
+        executeMoveTask(task, newStatus) {
+            task.status = newStatus;
+            fetch(`/board-planning/${task.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.getCsrfToken() },
+                body: JSON.stringify({ status: newStatus })
+            }).catch(err => console.error('Gagal memindahkan task:', err));
+        },
+
+        /* --- Inisialisasi Sortable dan VALIDASI Drag & Drop --- */
         initSortable(el) {
             new Sortable(el, {
                 group: 'kanban',
@@ -296,7 +281,6 @@
                 ghostClass: 'opacity-40', 
                 dragClass: 'shadow-2xl',
                 draggable: '.kanban-item',
-                
                 filter: 'button, input, a, .task-checkbox', 
                 preventOnFilter: false, 
                 
@@ -306,42 +290,40 @@
                     
                     /* AlpineJS harus tetap mengatur DOM-nya sendiri */
                     evt.item.remove();
-                    
                     const task = this.tasks.find(t => t.id == taskId);
                     
                     if (task && task.status !== newStatus) {
-                        // --- VALIDASI MEDIA LINK UNTUK REVIEW ---
-                        // Jika dipindahkan ke In Review TAPI Aset Media kosong
-                        if (newStatus === 'review' && (!task.media_link || task.media_link.trim() === '')) {
-                            // Tampilkan modal peringatan dan simpan task-nya
+                        
+                        // 1. VALIDASI MEDIA LINK (Keduanya: Admin & Content Planner)
+                        const requiresMediaStatuses = ['review', 'revisi', 'hold_on', 'approved', 'published'];
+                        if (requiresMediaStatuses.includes(newStatus) && (!task.media_link || task.media_link.trim() === '')) {
                             this.taskNeedsMedia = task;
                             this.showMediaWarningModal = true;
-                            
-                            // TRIK REAKTIVITAS ALPINE: 
-                            // Ubah status sejenak lalu kembalikan agar Alpine me-render ulang DOM card ke posisi semula
-                            let originalStatus = task.status;
-                            task.status = 'refreshing';
-                            setTimeout(() => {
-                                task.status = originalStatus;
-                            }, 50);
-
-                            // BATALKAN perpindahan, Jangan lanjut update status
+                            this.revertDOM(task); // Batalkan perpindahan
                             return; 
                         }
-                        // ----------------------------------------
 
-                        task.status = newStatus;
+                        // 2. VALIDASI ROLE AKSES (Khusus selain Admin)
+                        if (this.userRole !== 'Admin') {
+                            const forbiddenDestinations = ['hold_on', 'approved'];
+                            // Blokir hanya jika Destinasi (Tujuan)-nya adalah Hold On atau Approved
+                            if (forbiddenDestinations.includes(newStatus)) {
+                                this.showRoleWarningModal = true;
+                                this.revertDOM(task); // Batalkan perpindahan
+                                return;
+                            }
+                        }
 
-                        /* API Update Status di Database */
-                        fetch(`/board-planning/${taskId}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': this.getCsrfToken()
-                            },
-                            body: JSON.stringify({ status: newStatus })
-                        }).catch(err => console.error('Gagal memindahkan task:', err));
+                        // 3. VALIDASI PUBLISH (Konfirmasi Upload Drive - Untuk Keduanya)
+                        if (newStatus === 'published') {
+                            this.taskToPublish = task;
+                            this.showPublishConfirmModal = true;
+                            this.revertDOM(task); // Batalkan visual sementara sampai di-Konfirmasi
+                            return;
+                        }
+
+                        // 4. JIKA LOLOS SEMUA VALIDASI, SIMPAN PERUBAHAN
+                        this.executeMoveTask(task, newStatus);
                     }
                 }
             });
@@ -367,7 +349,7 @@
             
             @php
                 $columns = [
-                    ['id' => 'backlog', 'name' => 'Backlog', 'color' => 'slate', 'icon' => 'fa-circle-notch'],
+                    ['id' => 'backlog', 'name' => 'Draft', 'color' => 'slate', 'icon' => 'fa-circle-notch'],
                     ['id' => 'progress', 'name' => 'In Progress', 'color' => 'indigo', 'icon' => 'fa-play'],
                     ['id' => 'review', 'name' => 'In Review', 'color' => 'red', 'icon' => 'fa-eye'],
                     ['id' => 'revisi', 'name' => 'Revisi', 'color' => 'amber', 'icon' => 'fa-rotate-left'],
@@ -507,11 +489,36 @@
         <div @click.outside="showMediaWarningModal = false" class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 text-center">
             <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner"><i class="fa-solid fa-link-slash"></i></div>
             <h3 class="text-2xl font-bold text-slate-800 mb-2">Aset Media Kosong!</h3>
-            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Perencanaan ini tidak dapat dipindahkan ke <b>"In Review"</b> karena tautan aset media (Google Drive) belum dilampirkan.</p>
+            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Perencanaan ini tidak dapat dipindahkan ke tahap <b>Review, Revisi, Hold On, Approved, atau Publish</b> karena tautan aset media (Google Drive) belum dilampirkan.</p>
             <div class="flex gap-4">
                 <button type="button" @click="showMediaWarningModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Nanti</button>
                 <button type="button" @click="showMediaWarningModal = false; openEdit(taskNeedsMedia)" class="flex-1 px-6 py-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-xl shadow-indigo-100 hover:bg-indigo-700 transform active:scale-95 transition-all flex items-center justify-center gap-2">
                     <i class="fa-solid fa-pen-to-square"></i> Isi Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Peringatan Role Content Planner -->
+    <div x-show="showRoleWarningModal" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div @click.outside="showRoleWarningModal = false" class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 text-center">
+            <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner"><i class="fa-solid fa-hand"></i></div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">Akses Dibatasi!</h3>
+            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Sebagai Content Planner, Anda tidak diizinkan untuk memindahkan tugas ke tahap <b>Hold On</b> atau <b>Approved</b>. Silakan hubungi Admin.</p>
+            <button type="button" @click="showRoleWarningModal = false" class="w-full px-6 py-3.5 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all">Mengerti</button>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Publish -->
+    <div x-show="showPublishConfirmModal" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div @click.outside="showPublishConfirmModal = false" class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 text-center">
+            <div class="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">Konfirmasi Arsip</h3>
+            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Sebelum dipublikasikan, apakah konten ini sudah benar-benar di-upload ke Google Drive sebagai arsip/pertinggalan?</p>
+            <div class="flex gap-4">
+                <button type="button" @click="showPublishConfirmModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Belum</button>
+                <button type="button" @click="executeMoveTask(taskToPublish, 'published'); showPublishConfirmModal = false" class="flex-[1.5] px-6 py-3.5 bg-emerald-500 text-white rounded-2xl font-bold shadow-xl shadow-emerald-100 hover:bg-emerald-600 transform active:scale-95 transition-all">
+                    Sudah, Publikasikan
                 </button>
             </div>
         </div>
