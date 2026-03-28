@@ -5,7 +5,7 @@
             <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-200">
                 <i class="fa-solid fa-chart-line text-lg"></i>
             </div>
-            <span class="text-xl font-black tracking-tighter hidden md:block">PlannerX</span>
+            <span class="text-xl font-black tracking-tighter hidden md:block">Content Planner</span>
         </div>
     </div>
 
@@ -73,6 +73,15 @@
                 <span class="font-semibold text-sm hidden md:block">Management Akun</span>
             </a>
         @endif
+
+        <a href="{{ route('logs.index') }}" 
+            class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 
+            {{ request()->routeIs('logs.index') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} 
+            rounded-xl transition-all">
+                
+                <i class="fa-solid fa-clock-rotate-left text-lg md:text-sm"></i>
+                <span class="font-semibold text-sm hidden md:block">Logs Activity</span>
+        </a>
         
         <div class="pt-8 hidden md:block">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2">Akun</p>

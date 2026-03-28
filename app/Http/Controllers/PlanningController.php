@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Planning;
-use App\Models\Note; // <-- WAJIB DITAMBAHKAN
+use App\Models\Note;
 use Illuminate\Http\Request;
+use App\Services\ActivityLogger;
 
 class PlanningController extends Controller
 {
@@ -37,6 +38,7 @@ class PlanningController extends Controller
         }
 
         $planning = Planning::create($data);
+        ActivityLogger::log('Planning', 'create', 'Membuat planning baru: ' . $planning->title, null, $planning->toArray());
         return response()->json(['success' => true, 'data' => $planning]);
     }
 
@@ -44,6 +46,7 @@ class PlanningController extends Controller
     public function update(Request $request, $id)
     {
         $planning = Planning::findOrFail($id);
+        $before = $planning->toArray();
 
         $data = $request->only([
             'title', 'status', 'content_type', 'description',
@@ -63,6 +66,7 @@ class PlanningController extends Controller
         }
 
         $planning->update($data);
+        ActivityLogger::log('Planning', 'update', 'Memperbarui planning: ' . $planning->title, $before ?? [], $planning->fresh()->toArray());
         return response()->json(['success' => true, 'data' => $planning]);
     }
 
@@ -70,6 +74,7 @@ class PlanningController extends Controller
     public function destroy($id)
     {
         $planning = Planning::findOrFail($id);
+        ActivityLogger::log('Planning', 'delete', 'Menghapus planning: ' . $planning->title, $planning->toArray(), null);
         $planning->delete();
         return response()->json(['success' => true]);
     }

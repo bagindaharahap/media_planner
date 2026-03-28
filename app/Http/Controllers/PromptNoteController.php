@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PromptNote;
+use App\Services\ActivityLogger;
 
 class PromptNoteController extends Controller
 {
@@ -24,6 +25,7 @@ class PromptNoteController extends Controller
         ]);
 
         $prompt = PromptNote::create($request->all());
+        ActivityLogger::log('Prompt', 'create', 'Membuat prompt baru: ' . $prompt->title, null, $prompt->toArray());
 
         return response()->json([
             'success' => true,
@@ -42,7 +44,9 @@ class PromptNoteController extends Controller
         ]);
 
         $prompt = PromptNote::findOrFail($id);
+        $before = $prompt->toArray();
         $prompt->update($request->all());
+        ActivityLogger::log('Prompt', 'update', 'Memperbarui prompt: ' . $prompt->title, $before, $prompt->fresh()->toArray());
 
         return response()->json([
             'success' => true,
@@ -55,6 +59,7 @@ class PromptNoteController extends Controller
     public function destroy($id)
     {
         $prompt = PromptNote::findOrFail($id);
+        ActivityLogger::log('Prompt', 'delete', 'Menghapus prompt: ' . $prompt->title, $prompt->toArray(), null);
         $prompt->delete();
 
         return response()->json([

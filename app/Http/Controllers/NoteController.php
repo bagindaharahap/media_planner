@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Illuminate\Http\Request;
+use App\Services\ActivityLogger;
 
 class NoteController extends Controller
 {
@@ -21,7 +22,7 @@ class NoteController extends Controller
         ]);
 
         $note = Note::create($request->all());
-
+        ActivityLogger::log('Notes', 'create', 'Membuat catatan baru: ' . $note->title, null, $note->toArray());
         return response()->json(['message' => 'Catatan berhasil disimpan', 'note' => $note]);
     }
 
@@ -40,11 +41,10 @@ class NoteController extends Controller
     // Mengupdate catatan
     public function update(Request $request, Note $note)
     {
-        // 1. Update data (sesuaikan dengan validasi Anda sebelumnya)
+        $before = $note->toArray();
         $note->update($request->all());
+        ActivityLogger::log('Notes', 'update', 'Memperbarui catatan: ' . $note->title, $before, $note->fresh()->toArray());
 
-        // 2. CEK TIPE REQUEST:
-        // Jika request datang dari AJAX Kalender (Fetch API yang memiliki header 'Accept: application/json')
         if ($request->expectsJson()) {
             return response()->json(['note' => $note]);
         }
@@ -56,6 +56,7 @@ class NoteController extends Controller
     // Menghapus catatan
     public function destroy(Note $note)
     {
+        ActivityLogger::log('Notes', 'delete', 'Menghapus catatan: ' . $note->title, $note->toArray(), null);
         $note->delete();
 
         if (request()->wantsJson()) {

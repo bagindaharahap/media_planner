@@ -6,6 +6,7 @@ use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromptNoteController;
+use App\Http\Controllers\LogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/prompt-notes', [PromptNoteController::class, 'store'])->name('prompt.store');
     Route::put('/prompt-notes/{id}', [PromptNoteController::class, 'update'])->name('prompt.update');
     Route::delete('/prompt-notes/{id}', [PromptNoteController::class, 'destroy'])->name('prompt.destroy');
+
+    // ==========================================
+    // LOGS ACTIVITY (Semua user yang login)
+    // ==========================================
+    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 
     // ==========================================
     // USER MANAGEMENT ROUTES (Admin Only)

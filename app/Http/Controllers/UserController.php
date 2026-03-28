@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Services\ActivityLogger;
 
 class UserController extends Controller
 {
@@ -27,12 +28,13 @@ class UserController extends Controller
         ]);
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'status' => 'Aktif', // Default Aktif untuk user baru
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'role'     => $request->role,
+            'status'   => 'Aktif',
             'password' => Hash::make($request->password),
         ]);
+        ActivityLogger::log('User', 'create', 'Menambahkan user baru: ' . $request->name . ' (' . $request->role . ')', null, ['name' => $request->name, 'email' => $request->email, 'role' => $request->role, 'status' => 'Aktif']);
 
         return redirect()->back()->with('success', 'Pengguna baru berhasil ditambahkan!');
     }
@@ -41,12 +43,14 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|string',
-            'status' => 'required|in:Aktif,Nonaktif',
-            'password' => 'nullable|string|min:8', // Password opsional
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'role'     => 'required|string',
+            'status'   => 'required|in:Aktif,Nonaktif',
+            'password' => 'nullable|string|min:8',
         ]);
+
+        $before = ['name' => $user->name, 'email' => $user->email, 'role' => $user->role, 'status' => $user->status];
 
         // Data yang akan diupdate
         $updateData = [
@@ -62,6 +66,7 @@ class UserController extends Controller
         }
 
         $user->update($updateData);
+        ActivityLogger::log('User', 'update', 'Memperbarui data user: ' . $user->name, $before, ['name' => $user->name, 'email' => $user->email, 'role' => $user->role, 'status' => $user->status]);
 
         return redirect()->back()->with('success', 'Data pengguna berhasil diperbarui!');
     }
@@ -69,6 +74,7 @@ class UserController extends Controller
     // Menghapus data user
     public function destroy(User $user)
     {
+        ActivityLogger::log('User', 'delete', 'Menghapus user: ' . $user->name, ['name' => $user->name, 'email' => $user->email, 'role' => $user->role], null);
         $user->delete();
         return redirect()->back()->with('success', 'Pengguna berhasil dihapus!');
     }
