@@ -14,5 +14,7 @@ class PromptNote extends Model
         'title',
         'category',
         'description',
+        'log_action', // Tambahkan ini
+        'log_user',   // Tambahkan ini
     ];
 }

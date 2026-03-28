@@ -95,6 +95,7 @@
                     <tr class="bg-slate-50/80 border-b border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400">
                         <th class="p-5 pl-8 rounded-tl-[2rem]">Judul Prompt</th>
                         <th class="p-5">Kategori</th>
+                        <th class="p-5">Log Terakhir</th>
                         <th class="p-5 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -108,6 +109,18 @@
                             </td>
                             <td class="p-5">
                                 <span class="px-3 py-1 bg-slate-100 text-slate-600 border border-slate-200 font-bold text-[10px] rounded-lg uppercase tracking-wider shadow-sm" x-text="prompt.category"></span>
+                            </td>
+                            <td class="p-5">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[11px] font-bold text-slate-700">
+                                        <span x-text="prompt.log_action || 'Dibuat'"></span> oleh 
+                                        <span class="text-indigo-600" x-text="prompt.log_user || '{{ Auth::user()->name ?? 'User' }}'"></span>
+                                    </span>
+                                    <span class="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+                                        <i class="fa-regular fa-clock"></i>
+                                        <span x-text="formatDate(prompt.updated_at || prompt.created_at || new Date())"></span>
+                                    </span>
+                                </div>
                             </td>
                             <td class="p-5 text-center">
                                 <!-- Opacity diatur terlihat penuh (tanpa transisi hover) -->
@@ -128,7 +141,7 @@
                     
                     <template x-if="paginatedPrompts.length === 0">
                         <tr>
-                            <td colspan="3" class="p-10 text-center">
+                            <td colspan="4" class="p-10 text-center">
                                 <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
                                     <i class="fa-solid fa-folder-open text-2xl"></i>
                                 </div>
@@ -178,27 +191,29 @@
     @include('promptnotes.editpromptnotes')
     @include('promptnotes.lihatpromptnotes')
 
-
 </div>
 
 @push('scripts')
 <script>
 function promptNotesData() {
     return {
+        // State Log & Auth
+        currentUser: '{{ Auth::user()->name ?? 'User' }}',
+
         // State Filter & Search
         search: '',
         filterCategory: '',
         
         // State Pagination
         currentPage: 1,
-        itemsPerPage: 5, // Ubah angka ini jika ingin menampilkan lebih banyak/sedikit per halaman
+        itemsPerPage: 5, 
         
         // State Modals
         showCreateModal: false,
         showEditModal: false,
         showViewModal: false,
         prompts: [],
-        form: { id: '', title: '', category: '', description: '' },
+        form: { id: '', title: '', category: '', description: '', log_action: '', log_user: '' },
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
 
         init() {
@@ -220,7 +235,6 @@ function promptNotesData() {
             return [...new Set(categories)].filter(Boolean).sort();
         },
 
-        // Mengambil semua prompt yang sesuai kriteria pencarian/filter (Belum dipotong pagination)
         get filteredPrompts() {
             return this.prompts.filter(p => {
                 let matchSearch = p.title.toLowerCase().includes(this.search.toLowerCase()) || 
@@ -230,16 +244,27 @@ function promptNotesData() {
             });
         },
 
-        // Logika Pagination 
         get totalPages() {
             return Math.ceil(this.filteredPrompts.length / this.itemsPerPage);
         },
         
-        // Mengambil sebagian data yang sesuai halaman saat ini
         get paginatedPrompts() {
             let start = (this.currentPage - 1) * this.itemsPerPage;
             let end = start + this.itemsPerPage;
             return this.filteredPrompts.slice(start, end);
+        },
+
+        // Format Tanggal untuk Kolom Log
+        formatDate(dateString) {
+            if(!dateString) return '-';
+            const date = new Date(dateString);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+            const d = date.getDate().toString().padStart(2, '0');
+            const m = months[date.getMonth()];
+            const y = date.getFullYear();
+            const hr = date.getHours().toString().padStart(2, '0');
+            const min = date.getMinutes().toString().padStart(2, '0');
+            return `${d} ${m} ${y}, ${hr}:${min} WIB`;
         },
 
         stripHtml(html) {
@@ -250,7 +275,7 @@ function promptNotesData() {
         },
 
         openCreate() {
-            this.form = { id: '', title: '', category: '', description: '' };
+            this.form = { id: '', title: '', category: '', description: '', log_action: '', log_user: '' };
             this.showCreateModal = true;
         },
         openEdit(prompt) {
@@ -266,6 +291,10 @@ function promptNotesData() {
             try {
                 if(!this.form.title || !this.form.category) throw new Error("Judul dan Kategori wajib diisi!");
                 
+                // Set data Log secara otomatis
+                this.form.log_action = 'Dibuat';
+                this.form.log_user = this.currentUser;
+
                 const res = await fetch('/prompt-notes', {
                     method: 'POST',
                     headers: {
@@ -293,6 +322,10 @@ function promptNotesData() {
             try {
                 if(!this.form.title || !this.form.category) throw new Error("Judul dan Kategori wajib diisi!");
                 
+                // Set data Log secara otomatis
+                this.form.log_action = 'Diperbarui';
+                this.form.log_user = this.currentUser;
+
                 const res = await fetch(`/prompt-notes/${this.form.id}`, {
                     method: 'POST',
                     headers: {

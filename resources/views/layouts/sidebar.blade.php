@@ -67,7 +67,7 @@
         <!-- VALIDASI ROLE UNTUK MENU MANAGEMENT AKUN   -->
         <!-- Hanya Admin yang bisa melihat menu ini     -->
         <!-- ========================================== -->
-        @if(Auth::check() && Auth::user()->role === 'Admin')
+        @if(Auth::check() && strtolower(Auth::user()->role) === 'admin')
             <a href="{{ route('users.index') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 {{ request()->routeIs('users.index') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
                 <i class="fa-solid fa-users-gear text-lg md:text-sm"></i>
                 <span class="font-semibold text-sm hidden md:block">Management Akun</span>
