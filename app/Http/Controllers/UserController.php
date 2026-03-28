@@ -32,7 +32,7 @@ class UserController extends Controller
             'email'    => $request->email,
             'role'     => $request->role,
             'status'   => 'Aktif',
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
         ]);
         ActivityLogger::log('User', 'create', 'Menambahkan user baru: ' . $request->name . ' (' . $request->role . ')', null, ['name' => $request->name, 'email' => $request->email, 'role' => $request->role, 'status' => 'Aktif']);
 
@@ -62,7 +62,7 @@ class UserController extends Controller
 
         // Jika password diisi, hash dan tambahkan ke data update
         if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($request->password);
+            $updateData['password'] = $request->password;
         }
 
         $user->update($updateData);

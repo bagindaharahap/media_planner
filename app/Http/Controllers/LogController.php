@@ -9,13 +9,7 @@ class LogController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
         $query = ActivityLog::with('user');
-
-        // User biasa hanya lihat log milik sendiri
-        if (strtolower($user->role) !== 'admin') {
-            $query->where('user_id', $user->id);
-        }
 
         // 🔍 GLOBAL SEARCH (user name & activity)
         if ($request->filled('search')) {
