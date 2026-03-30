@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Laravel</title>
+        <link rel="icon" href="https://i.ibb.co.com/6c76TKZN/Logo-IBEKAMI.png">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
