@@ -3,20 +3,60 @@
     
     <!-- Bagian Kiri: Greeting & Tanggal -->
     <div class="flex flex-col justify-center gap-1">
-        <h2 class="font-extrabold text-xl text-slate-800 hidden sm:block leading-tight">Selamat Datang, Admin 👋</h2>
+        <!-- Teks 'Admin' diganti dengan pemanggilan nama dari database -->
+        <h2 class="font-extrabold text-xl text-slate-800 hidden sm:block leading-tight">Selamat Datang, {{ Auth::user()->name ?? 'User' }} 👋</h2>
         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest hidden md:block">
             <i class="fa-regular fa-calendar text-[10px] mr-1"></i> {{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}
         </p>
     </div>
 
-
     <!-- Bagian Kanan: Aksi & Profil User (Lebih lega) -->
     <div class="flex items-center gap-5 sm:gap-8 shrink-0">
 
-        <!-- Notifikasi -->
-        <div class="relative cursor-pointer w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 transition-colors text-slate-400 hover:text-indigo-600">
-            <i class="fa-solid fa-bell text-xl transition-transform hover:rotate-12"></i>
-            <span class="absolute top-2 right-2.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white"></span>
+        <!-- Tombol Notifikasi (Letakkan di Navbar kanan) -->
+        <div class="relative" x-data="{ openNotif: false }" @click.outside="openNotif = false">
+            <button @click="openNotif = !openNotif" class="relative w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all border border-slate-200 shadow-sm">
+                <i class="fa-regular fa-bell text-lg"></i>
+                <!-- Badge Titik Merah (Jika ada notif baru) -->
+                <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse"></span>
+            </button>
+
+            <!-- Dropdown Isi Notifikasi -->
+            <div x-show="openNotif" x-cloak x-transition class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-bold text-slate-800 text-sm">Notifikasi</h3>
+                    <button class="text-[10px] text-indigo-600 font-bold hover:underline">Tandai semua dibaca</button>
+                </div>
+                
+                <div class="max-h-[300px] overflow-y-auto divide-y divide-slate-50 custom-scrollbar">
+                    <!-- Item Notif 1 (Action Needed) -->
+                    <a href="#" class="p-4 flex items-start gap-4 hover:bg-slate-50 transition-colors cursor-pointer bg-indigo-50/30">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 shrink-0 mt-1">
+                            <i class="fa-solid fa-clipboard-check text-[10px]"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-800 font-bold mb-1">Konten Menunggu Review</p>
+                            <p class="text-[11px] text-slate-500 line-clamp-2">Lisa memindahkan "Promo Ramadhan TikTok" ke status In Review.</p>
+                            <p class="text-[9px] text-slate-400 font-semibold mt-2">10 Menit yang lalu</p>
+                        </div>
+                    </a>
+
+                    <!-- Item Notif 2 (Error API) -->
+                    <a href="#" class="p-4 flex items-start gap-4 hover:bg-slate-50 transition-colors cursor-pointer">
+                        <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 shrink-0 mt-1">
+                            <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-800 font-bold mb-1">Koneksi Instagram Terputus</p>
+                            <p class="text-[11px] text-slate-500 line-clamp-2">Token API kedaluwarsa. Silakan login ulang Meta API.</p>
+                            <p class="text-[9px] text-slate-400 font-semibold mt-2">1 Jam yang lalu</p>
+                        </div>
+                    </a>
+                </div>
+                <a href="#" class="block px-5 py-3 text-center text-xs font-bold text-slate-500 bg-slate-50 hover:text-indigo-600 hover:bg-indigo-50 transition-all border-t border-slate-100">
+                    Lihat Semua Notifikasi
+                </a>
+            </div>
         </div>
         
         <!-- Area Profil -->

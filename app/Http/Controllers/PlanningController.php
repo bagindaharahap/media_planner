@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User; // Tambahkan ini untuk memanggil data Admin
 use App\Models\Planning;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use App\Services\ActivityLogger;
+use App\Notifications\ContentReviewNotification;
 
 class PlanningController extends Controller
 {
@@ -47,6 +49,9 @@ class PlanningController extends Controller
     {
         $planning = Planning::findOrFail($id);
         $before = $planning->toArray();
+        
+        // Simpan status lama untuk pengecekan notifikasi
+        $statusLama = $planning->status;
 
         $data = $request->only([
             'title', 'status', 'content_type', 'description',
@@ -65,7 +70,26 @@ class PlanningController extends Controller
             }, $data['assigned']);
         }
 
+        // Jalankan proses update ke database
         $planning->update($data);
+        
+        // =========================================================
+        // LOGIKA NOTIFIKASI
+        // Jika status lama BUKAN 'review' tapi sekarang diubah ke 'review'
+        // =========================================================
+        $statusBaru = $planning->fresh()->status;
+        
+        if ($statusLama !== 'review' && $statusBaru === 'review') {
+            // Cari semua akun yang memiliki role Admin (Pastikan tulisan 'Admin' sesuai dengan format db Anda)
+            $admins = User::where('role', 'Admin')->get(); 
+            
+            // Kirim notifikasi ke semua admin
+            foreach ($admins as $admin) {
+                $admin->notify(new ContentReviewNotification($planning));
+            }
+        }
+        // =========================================================
+
         ActivityLogger::log('Planning', 'update', 'Memperbarui planning: ' . $planning->title, $before ?? [], $planning->fresh()->toArray());
         return response()->json(['success' => true, 'data' => $planning]);
     }

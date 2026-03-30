@@ -23,7 +23,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Proses login pengguna.
+     * Proses login pengguna (Manual dengan Email & Password).
      */
     public function login(Request $request)
     {
@@ -60,7 +60,10 @@ class AuthController extends Controller
         // 4. Proses Autentikasi
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            ActivityLogger::log('Auth', 'login', 'Login ke sistem');
+            
+            // Catat log aktivitas login
+            ActivityLogger::log('Auth', 'login', 'Login manual ke sistem');
+            
             return $this->redirectBasedOnRole();
         }
 
@@ -71,11 +74,35 @@ class AuthController extends Controller
     }
 
     /**
+     * Proses login cepat menggunakan ID User (Untuk halaman "Pilih Akun").
+     */
+    public function loginAsUser($id)
+    {
+        $user = User::findOrFail($id);
+        
+        if ($user->status !== 'Aktif') {
+            return back()->withErrors(['error' => 'Akun ini sedang nonaktif.']);
+        }
+
+        Auth::login($user);
+        request()->session()->regenerate();
+
+        // Catat log aktivitas untuk login cepat
+        ActivityLogger::log('Auth', 'login', 'Login cepat (Quick Login) ke sistem');
+
+        return $this->redirectBasedOnRole(); // Menggunakan fungsi redirect sentral agar aman
+    }
+    
+    /**
      * Logout pengguna.
      */
     public function logout(Request $request)
     {
-        ActivityLogger::log('Auth', 'logout', 'Logout dari sistem');
+        // Catat log aktivitas logout SEBELUM sesi dihancurkan
+        if (Auth::check()) {
+            ActivityLogger::log('Auth', 'logout', 'Logout dari sistem');
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -99,10 +126,13 @@ class AuthController extends Controller
         }
 
         // Redirect berdasarkan role
-        if ($user->role === 'admin') {
-            return redirect()->route('users.index');
+        if ($user->role === 'admin' || $user->role === 'Admin') {
+            // Jika admin, Anda bisa mengarahkannya ke halaman spesifik admin 
+            // misalnya route('users.index') atau tetap ke route('dashboard')
+            return redirect()->route('dashboard'); 
         }
 
+        // User biasa
         return redirect()->route('dashboard');
     }
 }

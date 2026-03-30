@@ -9,8 +9,8 @@
         </div>
     </div>
 
-    <!-- Gunakan x-data Alpine.js untuk mengatur state dropdown -->
-    <nav class="flex-1 px-3 md:px-6 space-y-2 mt-4" x-data="{ openPosts: false }">
+    <!-- x-data DITAMBAH: openPosts, showTerms, dan showPrivacy -->
+    <nav class="flex-1 px-3 md:px-6 space-y-2 mt-4 custom-scrollbar overflow-y-auto pb-4" x-data="{ openPosts: false, showTerms: false, showPrivacy: false }">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2 hidden md:block">Utama</p>
         
         <a href="{{ route('dashboard') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
@@ -56,16 +56,15 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- MENU BARU: PROMPT NOTE                     -->
+        <!-- MENU: PROMPT NOTE                          -->
         <!-- ========================================== -->
-        <a href="{{ route('prompt.index') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all">
+        <a href="{{ route('prompt.index') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 {{ request()->routeIs('prompt.index') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
             <i class="fa-solid fa-pen-to-square text-lg md:text-sm"></i>
             <span class="font-semibold text-sm hidden md:block">Prompt Note</span>
         </a>
 
         <!-- ========================================== -->
-        <!-- VALIDASI ROLE UNTUK MENU MANAGEMENT AKUN   -->
-        <!-- Hanya Admin yang bisa melihat menu ini     -->
+        <!-- MENU: MANAGEMENT AKUN (Hanya Admin)        -->
         <!-- ========================================== -->
         @if(Auth::check() && strtolower(Auth::user()->role) === 'admin')
             <a href="{{ route('users.index') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 {{ request()->routeIs('users.index') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
@@ -74,36 +73,122 @@
             </a>
         @endif
 
+        <!-- ========================================== -->
+        <!-- MENU: LOGS ACTIVITY                        -->
+        <!-- ========================================== -->
         <a href="{{ route('logs.index') }}" 
             class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 
             {{ request()->routeIs('logs.index') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} 
             rounded-xl transition-all">
-                
                 <i class="fa-solid fa-clock-rotate-left text-lg md:text-sm"></i>
                 <span class="font-semibold text-sm hidden md:block">Logs Activity</span>
         </a>
         
-        <div class="pt-8 hidden md:block">
+        <!-- ========================================== -->
+        <!-- MENU: AKUN SOSIAL MEDIA                    -->
+        <!-- ========================================== -->
+        <div class="pt-6 hidden md:block">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2">Akun</p>
-            <a href="#" class="flex items-center justify-between px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all">
+            <a href="{{ route('instagram.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('instagram.index') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
                 <div class="flex items-center gap-3">
                     <i class="fa-brands fa-instagram text-pink-500"></i>
                     <span class="font-semibold text-sm">Instagram</span>
                 </div>
-                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" title="API Terhubung"></span>
             </a>
-            <a href="#" class="flex items-center justify-between px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all mt-1">
+            <a href="{{ route('tiktok.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('tiktok.index') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all mt-1">
                 <div class="flex items-center gap-3">
                     <i class="fa-brands fa-tiktok text-slate-900"></i>
                     <span class="font-semibold text-sm">TikTok</span>
                 </div>
-                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" title="API Terhubung"></span>
             </a>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MENU LEGAL & PRIVACY                       -->
+        <!-- ========================================== -->
+        <div class="pt-6">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2 hidden md:block">Legal</p>
+            
+            <!-- Tombol Pemicu Modal Terms -->
+            <button type="button" @click="showTerms = true" class="w-full flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all">
+                <i class="fa-solid fa-file-contract text-lg md:text-sm"></i>
+                <span class="font-semibold text-sm hidden md:block text-left">Terms & Conditions</span>
+            </button>
+            
+            <!-- Tombol Pemicu Modal Privacy -->
+            <button type="button" @click="showPrivacy = true" class="w-full flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all mt-1">
+                <i class="fa-solid fa-shield text-lg md:text-sm"></i>
+                <span class="font-semibold text-sm hidden md:block text-left">Privacy Policy</span>
+            </button>
+
+            <!-- Modal Terms -->
+            <template x-teleport="body">
+                <div x-show="showTerms" x-cloak class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+                     x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                    <div @click.outside="showTerms = false" class="bg-white w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-slate-200"
+                         x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 scale-95 translate-y-8" x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+                        
+                        <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                    <i class="fa-solid fa-file-contract"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Syarat dan Ketentuan</h3>
+                                    <p class="text-xs text-slate-500 font-medium">Internal Perusahaan</p>
+                                </div>
+                            </div>
+                            <button @click="showTerms = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
+                                <i class="fa-solid fa-xmark text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto p-8 text-sm text-slate-600 leading-relaxed custom-scrollbar">
+                            <!-- Memanggil isi dari folder components -->
+                            @include('terms')
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Modal Privacy Policy -->
+            <template x-teleport="body">
+                <div x-show="showPrivacy" x-cloak class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+                     x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                    <div @click.outside="showPrivacy = false" class="bg-white w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-slate-200"
+                         x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 scale-95 translate-y-8" x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+                        
+                        <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                    <i class="fa-solid fa-shield text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Kebijakan Privasi</h3>
+                                    <p class="text-xs text-slate-500 font-medium">Internal Perusahaan</p>
+                                </div>
+                            </div>
+                            <button @click="showPrivacy = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
+                                <i class="fa-solid fa-xmark text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto p-8 text-sm text-slate-600 leading-relaxed custom-scrollbar">
+                            <!-- Memanggil isi dari folder components -->
+                            @include('privacy')
+                        </div>
+                    </div>
+                </div>
+            </template>
         </div>
     </nav>
 
     <!-- User Info & Logout Section -->
-    <div class="p-3 md:p-6 border-t border-slate-200 mt-auto">
+    <div class="p-3 md:p-6 border-t border-slate-200 mt-auto shrink-0">
         <div class="hidden md:block">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-sm uppercase">

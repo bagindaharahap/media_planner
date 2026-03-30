@@ -15,18 +15,29 @@ use App\Http\Controllers\LogController;
 */
 
 // ==========================================
-// AUTHENTICATION ROUTES (Tidak Perlu Login)
+// AUTHENTICATION & PUBLIC ROUTES (Bebas Akses / Tanpa Login)
 // ==========================================
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
 // ==========================================
-// PROTECTED ROUTES (Perlu Login)
+// Halaman Terms, Privacy, dan Login Cepat (Harus diluar middleware auth)
+// ==========================================
+Route::get('/login-as/{id}', [AuthController::class, 'loginAsUser'])->name('login.as');
+Route::get('/terms-conditions', function() { return view('terms'); })->name('terms');
+Route::get('/privacy-policy', function() { return view('privacy'); })->name('privacy');
+
+
+// ==========================================
+// PROTECTED ROUTES (Wajib Login)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
     
+    // Logout sebaiknya di dalam middleware karena butuh sesi aktif
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     // Dashboard
     Route::get('/dashboard', function () {
         $plannings = \App\Models\Planning::all();
@@ -72,6 +83,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 
     // ==========================================
+    // MONITORING MEDIA SOSIAL (Instagram & TikTok)
+    // ==========================================
+    Route::get('/instagram', function () {
+        // Tambahkan awalan 'akun.' agar Laravel mencarinya di folder views/akun/
+        return view('akun.instagram');
+    })->name('instagram.index');
+
+    Route::get('/tiktok', function () {
+        // Tambahkan awalan 'akun.' agar Laravel mencarinya di folder views/akun/
+        return view('akun.tiktok');
+    })->name('tiktok.index');
+
+
+    // ==========================================
     // USER MANAGEMENT ROUTES (Admin Only)
     // ==========================================
     Route::middleware(['role:Admin'])->group(function () {
@@ -80,4 +105,5 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/management-akun/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/management-akun/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
+
 });
