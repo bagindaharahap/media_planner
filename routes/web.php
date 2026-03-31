@@ -7,6 +7,8 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromptNoteController;
 use App\Http\Controllers\LogController;
+// PERBAIKAN: Tambahkan baris import ini agar Laravel mengenali TikTokController
+use App\Http\Controllers\TikTokController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,10 +58,7 @@ Route::middleware(['auth'])->group(function () {
     // ==========================================
     // CALENDAR & NOTES ROUTES
     // ==========================================
-    Route::get('/calendar', function () {
-        $plannings = \App\Models\Planning::all();
-        return view('calendernotes.calendernotesindex', compact('plannings'));
-    })->name('calendar.index');
+    Route::get('/calendar', [PlanningController::class, 'calendar'])->name('calendar.index');
     
     Route::get('/calendar/notes/{note}', [NoteController::class, 'show'])->name('calendar.notes.show');
     Route::get('/calendar/notes/{note}/edit', [NoteController::class, 'edit'])->name('calendar.notes.edit');
@@ -86,14 +85,16 @@ Route::middleware(['auth'])->group(function () {
     // MONITORING MEDIA SOSIAL (Instagram & TikTok)
     // ==========================================
     Route::get('/instagram', function () {
-        // Tambahkan awalan 'akun.' agar Laravel mencarinya di folder views/akun/
         return view('akun.instagram');
     })->name('instagram.index');
 
     Route::get('/tiktok', function () {
-        // Tambahkan awalan 'akun.' agar Laravel mencarinya di folder views/akun/
         return view('akun.tiktok');
     })->name('tiktok.index');
+
+    // Rute Koneksi TikTok
+    Route::get('/tiktok/connect', [TikTokController::class, 'redirectToTikTok'])->name('tiktok.connect');
+    Route::get('/tiktok/callback', [TikTokController::class, 'handleCallback'])->name('tiktok.callback');
 
 
     // ==========================================

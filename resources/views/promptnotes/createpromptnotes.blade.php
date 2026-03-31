@@ -1,4 +1,4 @@
-<!-- Modal Buat Prompt -->
+<!-- Modal Create Prompt -->
 <div
     x-show="showCreateModal"
     x-cloak
@@ -21,8 +21,8 @@
                     <i class="fa-solid fa-pen-to-square"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Buat Prompt Baru</h3>
-                    <p class="text-xs text-slate-500 font-medium">Tambahkan template instruksi untuk kebutuhan AI.</p>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Create New Prompt</h3>
+                    <p class="text-xs text-slate-500 font-medium">Add an instruction template for AI requirements.</p>
                 </div>
             </div>
             <button @click="showCreateModal = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
@@ -31,20 +31,19 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
-            <!-- Input Judul & Kategori -->
+            <!-- Title & Category Input -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Judul Prompt</label>
-                    <input type="text" x-model="form.title" placeholder="Contoh: Prompt Penulisan SEO" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Prompt Title</label>
+                    <input type="text" x-model="form.title" placeholder="e.g., SEO Writing Prompt" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Kategori / Tag</label>
-                    <!-- Input Kategori Bebas (Nanti otomatis masuk filter) -->
-                    <input type="text" x-model="form.category" placeholder="Contoh: Marketing, SEO, Sosial Media" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Category / Tag</label>
+                    <input type="text" x-model="form.category" placeholder="e.g., Marketing, SEO, Social Media" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
                 </div>
             </div>
 
-            <!-- Rich Text Editor Kustom -->
+            <!-- Custom Rich Text Editor -->
             <div class="space-y-3" x-data="{ 
                 format(cmd, val = null) { 
                     document.execCommand(cmd, false, val); 
@@ -52,7 +51,7 @@
                     form.description = $refs.createEditor.innerHTML;
                 }
             }" x-init="$watch('showCreateModal', value => { if(!value) { $refs.createEditor.innerHTML = ''; } })">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Isi Deskripsi / Prompt</label>
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Description / Prompt Content</label>
                 <div class="border border-slate-200 rounded-3xl overflow-hidden shadow-sm bg-white focus-within:ring-2 focus-within:ring-indigo-500/20">
                     <div class="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-4 text-slate-400">
                         <button type="button" @click="format('bold')" class="hover:text-indigo-600 p-1.5 transition-colors"><i class="fa-solid fa-bold"></i></button>
@@ -61,14 +60,14 @@
                         <button type="button" @click="format('insertUnorderedList')" class="hover:text-indigo-600 p-1.5 transition-colors"><i class="fa-solid fa-list-ul"></i></button>
                     </div>
                     <!-- Editor Area -->
-                    <div x-ref="createEditor" contenteditable="true" @input="form.description = $el.innerHTML" class="editor-content w-full p-6 min-h-[180px] text-sm text-slate-600 focus:outline-none bg-white" data-placeholder="Tuliskan detail prompt atau format yang diinginkan di sini..."></div>
+                    <div x-ref="createEditor" contenteditable="true" @input="form.description = $el.innerHTML" class="editor-content w-full p-6 min-h-[180px] text-sm text-slate-600 focus:outline-none bg-white" data-placeholder="Write the prompt details or desired format here..."></div>
                 </div>
             </div>
         </div>
 
         <div class="px-8 py-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-4">
-            <button @click="showCreateModal = false" class="px-8 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-all">Batal</button>
-            <button @click="savePrompt()" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95">Simpan Prompt</button>
+            <button @click="showCreateModal = false" class="px-8 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-all">Cancel</button>
+            <button @click="savePrompt()" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95">Save Prompt</button>
         </div>
     </div>
 </div>

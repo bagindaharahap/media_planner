@@ -1,5 +1,4 @@
 <!-- Modal Edit Planning -->
-
 <div
     x-show="showEditModal"
     x-cloak
@@ -25,8 +24,8 @@
                     <i class="fa-solid fa-pen-to-square"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Edit Perencanaan</h3>
-                    <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Perbarui detail rencana yang sudah ada</p>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Edit Planning</h3>
+                    <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Update details of an existing plan</p>
                 </div>
             </div>
             <button type="button" @click="showEditModal = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
@@ -37,7 +36,7 @@
         <!-- Body -->
         <div class="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
             
-            <!-- Grid Atas: Status & Judul -->
+            <!-- Top Grid: Status & Title -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="space-y-2">
                     <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Status</label>
@@ -48,14 +47,14 @@
                     </select>
                 </div>
                 <div class="md:col-span-3 space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Judul Rencana</label>
-                    <input type="text" x-model="editingPlanning.title" placeholder="Masukan judul rencana..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-lg font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Planning Title</label>
+                    <input type="text" x-model="editingPlanning.title" placeholder="Enter planning title..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-lg font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                 </div>
             </div>
 
-            <!-- Dropdown Jenis Konten -->
+            <!-- Content Type Selection -->
             <div class="space-y-2">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Jenis Konten</label>
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Content Type</label>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <template x-for="type in ['TikTok', 'Reels', 'Feed', 'Story']" :key="type">
                         <button 
@@ -76,7 +75,7 @@
                 </div>
             </div>
 
-            <!-- Deskripsi (Rich Text Editor) -->
+            <!-- Description (Rich Text Editor) -->
             <div class="space-y-3" x-data="{ 
                 format(cmd, val = null) { 
                     document.execCommand(cmd, false, val); 
@@ -87,7 +86,7 @@
                     editingPlanning.description = $refs.editEditor.innerHTML; 
                 }
             }" x-init="$watch('showEditModal', value => { if(value) { setTimeout(() => { $refs.editEditor.innerHTML = editingPlanning.description || ''; }, 100); } })">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Deskripsi Konten</label>
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Content Description</label>
                 <div class="border border-slate-200 rounded-3xl overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all bg-white">
                     <div class="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-4 text-slate-400">
                         <div class="flex items-center gap-3 pr-4 border-r border-slate-200">
@@ -105,15 +104,15 @@
                         contenteditable="true" 
                         @input="updateContent()"
                         class="editor-content w-full p-6 min-h-[180px] text-sm text-slate-600 focus:outline-none bg-white"
-                        data-placeholder="Tuliskan detail konten di sini..."
+                        data-placeholder="Write content details here..."
                     ></div>
                 </div>
             </div>
 
-            <!-- Tanggal & Prioritas -->
+            <!-- Date & Priority -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 bg-slate-50 rounded-3xl border border-slate-100">
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Mulai</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Start Date</label>
                     <input type="date" x-model="editingPlanning.start_date" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700">
                 </div>
                 <div class="space-y-2">
@@ -121,7 +120,7 @@
                     <input type="date" x-model="editingPlanning.due_date" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-red-500">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Prioritas</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Priority</label>
                     <select x-model="editingPlanning.priority" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700 outline-none">
                         <option value="urgent">Urgent</option>
                         <option value="high">High</option>
@@ -131,12 +130,12 @@
                 </div>
             </div>
 
-            <!-- Tim & Jobdesk -->
+            <!-- Team & Jobdesk Management -->
             <div class="space-y-4">
                 <div class="flex items-center justify-between px-1">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Tim & Jobdesk</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Team & Jobdesk</label>
                     <button type="button" @click="if(!editingPlanning.assigned) editingPlanning.assigned = []; editingPlanning.assigned.push({ name: '', jobdesks: [], tools: [], customJob: '', customTool: '' })" class="text-indigo-600 text-xs font-black uppercase tracking-widest flex items-center gap-2 hover:text-indigo-700 transition-all">
-                        <i class="fa-solid fa-user-plus"></i> Tambah Anggota
+                        <i class="fa-solid fa-user-plus"></i> Add Member
                     </button>
                 </div>
                 <div class="space-y-4">
@@ -146,10 +145,10 @@
                                 <i class="fa-solid fa-times"></i>
                             </button>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <!-- Input Nama -->
+                                <!-- Name Input -->
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Nama</label>
-                                    <input type="text" x-model="assign.name" placeholder="Masukkan nama anggota..." class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Name</label>
+                                    <input type="text" x-model="assign.name" placeholder="Enter member name..." class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                                 </div>
                                 
                                 <!-- Multi Select Jobdesk -->
@@ -157,7 +156,7 @@
                                     <label class="text-[10px] font-bold text-slate-400 uppercase">Jobdesk</label>
                                     <div class="relative">
                                         <button type="button" @click="open = !open; if(!assign.jobdesks) assign.jobdesks = []" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-left text-sm font-bold text-slate-600 flex justify-between items-center transition-all">
-                                            <span x-text="(assign.jobdesks || []).length ? (assign.jobdesks || []).length + ' Dipilih' : 'Pilih...'"></span>
+                                            <span x-text="(assign.jobdesks || []).length ? (assign.jobdesks || []).length + ' Selected' : 'Select...'"></span>
                                             <i class="fa-solid fa-chevron-down text-[10px]"></i>
                                         </button>
                                         <div x-show="open" @click.outside="open = false" x-cloak class="absolute z-20 top-full mt-2 w-full bg-white border border-slate-200 rounded-2xl shadow-xl py-2 max-h-60 overflow-y-auto custom-scrollbar">
@@ -181,10 +180,10 @@
                                             <!-- Toggle Custom Input (Jobdesk) -->
                                             <div class="px-4 py-2 border-t border-slate-100 mt-1" x-data="{ showInput: false }">
                                                 <button type="button" x-show="!showInput" @click="showInput = true" class="text-[10px] font-bold text-indigo-600 flex items-center gap-1.5 w-full hover:text-indigo-700 mt-1">
-                                                    <i class="fa-solid fa-plus"></i> Tambah Jobdesk Custom
+                                                    <i class="fa-solid fa-plus"></i> Add Custom Jobdesk
                                                 </button>
                                                 <div x-show="showInput" class="flex items-center gap-2 mt-1">
-                                                    <input type="text" x-model="assign.customJob" @keydown.enter.prevent="if(assign.customJob.trim() !== '') { if(!assign.jobdesks) assign.jobdesks = []; assign.jobdesks.push(assign.customJob.trim()); assign.customJob = ''; showInput = false; }" placeholder="Ketik & Enter..." class="w-full text-xs font-bold p-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-400">
+                                                    <input type="text" x-model="assign.customJob" @keydown.enter.prevent="if(assign.customJob.trim() !== '') { if(!assign.jobdesks) assign.jobdesks = []; assign.jobdesks.push(assign.customJob.trim()); assign.customJob = ''; showInput = false; }" placeholder="Type & Enter..." class="w-full text-xs font-bold p-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-400">
                                                     <button type="button" @click.prevent="if(assign.customJob.trim() !== '') { if(!assign.jobdesks) assign.jobdesks = []; assign.jobdesks.push(assign.customJob.trim()); assign.customJob = ''; showInput = false; }" class="w-8 h-8 shrink-0 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-100"><i class="fa-solid fa-check text-xs"></i></button>
                                                     <button type="button" @click="showInput = false; assign.customJob = ''" class="w-8 h-8 shrink-0 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center hover:bg-slate-100 hover:text-red-500"><i class="fa-solid fa-xmark text-xs"></i></button>
                                                 </div>
@@ -198,7 +197,7 @@
                                     <label class="text-[10px] font-bold text-slate-400 uppercase">Tools</label>
                                     <div class="relative">
                                         <button type="button" @click="open = !open; if(!assign.tools) assign.tools = []" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-left text-sm font-bold text-slate-600 flex justify-between items-center transition-all">
-                                            <span x-text="(assign.tools || []).length ? (assign.tools || []).length + ' Dipilih' : 'Pilih...'"></span>
+                                            <span x-text="(assign.tools || []).length ? (assign.tools || []).length + ' Selected' : 'Select...'"></span>
                                             <i class="fa-solid fa-chevron-down text-[10px]"></i>
                                         </button>
                                         <div x-show="open" @click.outside="open = false" x-cloak class="absolute z-20 top-full mt-2 w-full bg-white border border-slate-200 rounded-2xl shadow-xl py-2 max-h-60 overflow-y-auto custom-scrollbar">
@@ -222,10 +221,10 @@
                                             <!-- Toggle Custom Input (Tools) -->
                                             <div class="px-4 py-2 border-t border-slate-100 mt-1" x-data="{ showInput: false }">
                                                 <button type="button" x-show="!showInput" @click="showInput = true" class="text-[10px] font-bold text-indigo-600 flex items-center gap-1.5 w-full hover:text-indigo-700 mt-1">
-                                                    <i class="fa-solid fa-plus"></i> Tambah Tool Custom
+                                                    <i class="fa-solid fa-plus"></i> Add Custom Tool
                                                 </button>
                                                 <div x-show="showInput" class="flex items-center gap-2 mt-1">
-                                                    <input type="text" x-model="assign.customTool" @keydown.enter.prevent="if(assign.customTool.trim() !== '') { if(!assign.tools) assign.tools = []; assign.tools.push(assign.customTool.trim()); assign.customTool = ''; showInput = false; }" placeholder="Ketik & Enter..." class="w-full text-xs font-bold p-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-400">
+                                                    <input type="text" x-model="assign.customTool" @keydown.enter.prevent="if(assign.customTool.trim() !== '') { if(!assign.tools) assign.tools = []; assign.tools.push(assign.customTool.trim()); assign.customTool = ''; showInput = false; }" placeholder="Type & Enter..." class="w-full text-xs font-bold p-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-400">
                                                     <button type="button" @click.prevent="if(assign.customTool.trim() !== '') { if(!assign.tools) assign.tools = []; assign.tools.push(assign.customTool.trim()); assign.customTool = ''; showInput = false; }" class="w-8 h-8 shrink-0 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-100"><i class="fa-solid fa-check text-xs"></i></button>
                                                     <button type="button" @click="showInput = false; assign.customTool = ''" class="w-8 h-8 shrink-0 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center hover:bg-slate-100 hover:text-red-500"><i class="fa-solid fa-xmark text-xs"></i></button>
                                                 </div>
@@ -239,11 +238,11 @@
                 </div>
             </div>
 
-            <!-- Referensi -->
+            <!-- References -->
             <div class="space-y-4">
                 <div class="flex items-center justify-between px-1">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Referensi / Link</label>
-                    <button type="button" @click="if(!editingPlanning.references) editingPlanning.references = []; editingPlanning.references.push('')" class="text-indigo-600 text-[10px] font-black uppercase tracking-widest hover:text-indigo-700 transition-all">+ Tambah Link</button>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">References / Links</label>
+                    <button type="button" @click="if(!editingPlanning.references) editingPlanning.references = []; editingPlanning.references.push('')" class="text-indigo-600 text-[10px] font-black uppercase tracking-widest hover:text-indigo-700 transition-all">+ Add Link</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <template x-for="(ref, rIndex) in editingPlanning.references" :key="rIndex">
@@ -258,40 +257,34 @@
                 </div>
             </div>
 
-            <!-- Aset Media & Catatan Revisi -->
+            <!-- Media Assets & Revision Notes -->
             <div class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Kolom Kiri: Aset Media (TERHUBUNG KE GOOGLE DRIVE) -->
+                    <!-- Media Assets (CONNECTED TO GOOGLE DRIVE) -->
                     <div class="space-y-4" x-data="{
-                        // Mendeteksi apakah link adalah GDrive dan mengambil ID-nya
                         getGDriveId() {
                             let url = editingPlanning.media_link;
                             if (!url) return null;
-                            
-                            // Regex pintar untuk mengekstrak File ID dari berbagai bentuk link Google Drive
                             let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || 
                                         url.match(/id=([a-zA-Z0-9_-]+)/) ||
                                         url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                            
                             return match ? match[1] : null;
                         },
-                        
-                        // Validasi apakah ini tautan Drive yang sah
                         isGDriveLink() {
                             return this.getGDriveId() !== null;
                         }
                     }">
                         <div class="flex items-center gap-2 px-1">
                             <i class="fa-brands fa-google-drive text-blue-500 text-xs"></i>
-                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Aset Media (Google Drive)</label>
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Media Assets (Google Drive)</label>
                         </div>
                         
                         <div class="space-y-4">
-                            <!-- Tombol Pintasan ke Folder Drive Anda -->
+                            <!-- Shortcuts to Drive Folders -->
                             <div class="grid grid-cols-2 gap-3">
                                 <a href="https://drive.google.com/drive/folders/1zPAEPDgKfMOp8i2AvslnoE9xd3y4YdoZ?usp=sharing" target="_blank" class="flex flex-col items-center justify-center p-3 bg-blue-50/50 border border-blue-100 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-all group shadow-sm">
                                     <i class="fa-solid fa-image text-blue-500 mb-1.5 text-lg group-hover:scale-110 transition-transform"></i>
-                                    <span class="text-[10px] font-bold text-blue-700">Upload Gambar</span>
+                                    <span class="text-[10px] font-bold text-blue-700">Upload Image</span>
                                 </a>
                                 <a href="https://drive.google.com/drive/folders/1h4EaSVwsAE1tdVba-Wak2Xg0L8NHxOa_?usp=sharing" target="_blank" class="flex flex-col items-center justify-center p-3 bg-red-50/50 border border-red-100 rounded-xl hover:bg-red-100 hover:border-red-300 transition-all group shadow-sm">
                                     <i class="fa-solid fa-film text-red-500 mb-1.5 text-lg group-hover:scale-110 transition-transform"></i>
@@ -299,13 +292,13 @@
                                 </a>
                             </div>
 
-                            <!-- Input Paste Link Drive -->
+                            <!-- Input Paste Drive Link -->
                             <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:bg-white focus-within:border-blue-300">
                                 <i class="fa-solid fa-link" :class="isGDriveLink() ? 'text-blue-500' : 'text-slate-300'"></i>
                                 <input 
                                     type="text" 
                                     x-model="editingPlanning.media_link" 
-                                    placeholder="Paste link Google Drive file di sini..." 
+                                    placeholder="Paste Google Drive file link here..." 
                                     class="bg-transparent w-full text-sm font-bold text-slate-700 outline-none"
                                 >
                             </div>
@@ -314,27 +307,23 @@
                             <div class="border border-slate-200 rounded-2xl flex flex-col items-center justify-center transition-all group relative overflow-hidden bg-slate-50 shadow-inner"
                                  :class="isGDriveLink() ? 'p-0 min-h-[250px]' : 'p-6 border-dashed min-h-[160px]'">
                                 
-                                <!-- State 1: Belum Ada Link -->
                                 <template x-if="!editingPlanning.media_link">
                                     <div class="flex flex-col items-center text-center">
                                         <i class="fa-brands fa-google-drive text-slate-300 mb-2 text-3xl group-hover:text-blue-400 transition-colors"></i>
-                                        <p class="text-[10px] font-bold text-slate-400">Preview file Anda akan muncul di sini</p>
+                                        <p class="text-[10px] font-bold text-slate-400">Your file preview will appear here</p>
                                     </div>
                                 </template>
 
-                                <!-- State 2: Link Bukan Google Drive -->
                                 <template x-if="editingPlanning.media_link && !isGDriveLink()">
                                     <div class="flex flex-col items-center text-center">
                                         <i class="fa-solid fa-globe text-slate-300 mb-2 text-3xl"></i>
-                                        <p class="text-[10px] font-bold text-slate-500">Tautan Terlampir (Bukan URL GDrive valid)</p>
-                                        <a :href="editingPlanning.media_link" target="_blank" class="text-xs text-blue-500 mt-2 font-bold hover:underline">Buka Tautan</a>
+                                        <p class="text-[10px] font-bold text-slate-500">Link Attached (Not a valid GDrive URL)</p>
+                                        <a :href="editingPlanning.media_link" target="_blank" class="text-xs text-blue-500 mt-2 font-bold hover:underline">Open Link</a>
                                     </div>
                                 </template>
 
-                                <!-- State 3: Iframe Google Drive Preview -->
                                 <template x-if="isGDriveLink()">
                                     <div class="w-full h-full absolute inset-0 bg-slate-900 flex items-center justify-center">
-                                        <!-- Menggunakan endpoint preview bawaan Google -->
                                         <iframe 
                                             :src="'https://drive.google.com/file/d/' + getGDriveId() + '/preview'" 
                                             class="w-full h-full border-0" 
@@ -344,24 +333,23 @@
                                     </div>
                                 </template>
                             </div>
-                            <p class="text-[9px] text-slate-400 italic px-1">*Penyimpanan eksternal dijamin tidak memberatkan server sistem Anda.</p>
+                            <p class="text-[9px] text-slate-400 italic px-1">*External storage ensures your system server remains light.</p>
                         </div>
                     </div>
 
-                    <!-- Kolom Kanan: Catatan Revisi (Hanya tampil di Review ke atas) -->
-                    <div class="space-y-4" x-show="!['draft', 'progress'].includes(editingPlanning.status)" x-transition>
+                    <!-- Revision Notes (Only visible from Review stage onwards) -->
+                    <div class="space-y-4" x-show="!['backlog', 'progress'].includes(editingPlanning.status)" x-transition>
                         <div class="flex items-center gap-2 ml-1">
                             <i class="fa-solid fa-clipboard-check text-rose-500 text-xs"></i>
-                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Catatan Revisi / Feedback</label>
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Revision Notes / Feedback</label>
                         </div>
                         <div class="relative">
                             <textarea 
                                 x-model="editingPlanning.revision_note" 
                                 rows="6" 
-                                placeholder="Tuliskan poin-poin yang perlu diperbaiki oleh tim di sini..." 
+                                placeholder="Write the points that need to be improved by the team here..." 
                                 class="w-full bg-rose-50/30 border border-rose-100 rounded-[2rem] p-6 text-sm text-slate-600 focus:ring-2 focus:ring-rose-500/20 focus:bg-white outline-none transition-all placeholder:text-slate-300 italic"
                             ></textarea>
-                            <!-- Dekorasi Ikon Feedback -->
                             <div class="absolute bottom-4 right-6 text-rose-200 pointer-events-none">
                                 <i class="fa-solid fa-comment-dots text-2xl opacity-20"></i>
                             </div>
@@ -373,8 +361,8 @@
 
         <!-- Footer -->
         <div class="px-8 py-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-4">
-            <button type="button" @click="showEditModal = false" class="px-8 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-all">Batal</button>
-            <button type="button" @click="executeUpdate()" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transform active:scale-95 transition-all">Simpan Perubahan</button>
+            <button type="button" @click="showEditModal = false" class="px-8 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-all">Cancel</button>
+            <button type="button" @click="executeUpdate()" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transform active:scale-95 transition-all">Save Changes</button>
         </div>
     </div>
 </div>

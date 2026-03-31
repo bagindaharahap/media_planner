@@ -1,5 +1,4 @@
-<!-- Modal Buat Planning -->
-
+<!-- Modal Create Planning -->
 <div
     x-show="showCreateModal"
     x-cloak
@@ -25,8 +24,8 @@
                     <i class="fa-solid fa-file-circle-plus"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Buat Perencanaan Baru</h3>
-                    <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Detail Konten & Manajemen Tim</p>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Create New Planning</h3>
+                    <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Content Details & Team Management</p>
                 </div>
             </div>
             <button type="button" @click="showCreateModal = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
@@ -37,29 +36,29 @@
         <!-- Body -->
         <div class="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
             
-            <!-- Grid Atas: Status & Judul -->
+            <!-- Top Grid: Status & Title -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="space-y-2">
                     <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Status</label>
                     <select x-model="planning.status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all outline-none">
-                        <option value="backlog">Backlog</option>
+                        <option value="backlog">Draft</option>
                         <option value="progress">In Progress</option>
                         <option value="review">In Review</option>
-                        <option value="revisi">Revisi</option>
+                        <option value="revisi">Revision</option>
                         <option value="hold_on">Hold On</option>
                         <option value="approved">Approved</option>
                         <option value="published">Published</option>
                     </select>
                 </div>
                 <div class="md:col-span-3 space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Judul Rencana</label>
-                    <input type="text" x-model="planning.title" placeholder="Masukan judul konten yang menarik..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-lg font-bold text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Planning Title</label>
+                    <input type="text" x-model="planning.title" placeholder="Enter an engaging content title..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-lg font-bold text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                 </div>
             </div>
 
-            <!-- Jenis Konten -->
+            <!-- Content Type -->
             <div class="space-y-2">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Jenis Konten</label>
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Content Type</label>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <template x-for="type in ['TikTok', 'Reels', 'Feed', 'Story']" :key="type">
                         <button 
@@ -77,7 +76,7 @@
                 </div>
             </div>
 
-            <!-- Editor Deskripsi -->
+            <!-- Description Editor -->
             <div class="space-y-3" x-data="{ 
                 format(cmd, val = null) { 
                     document.execCommand(cmd, false, val); 
@@ -85,7 +84,7 @@
                     planning.description = $refs.createEditor.innerHTML;
                 }
             }" x-init="$watch('showCreateModal', value => { if(!value) { $refs.createEditor.innerHTML = ''; } })">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Deskripsi Konten</label>
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Content Description</label>
                 <div class="border border-slate-200 rounded-3xl overflow-hidden shadow-sm bg-white focus-within:ring-2 focus-within:ring-indigo-500/20">
                     <div class="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-4 text-slate-400">
                         <button type="button" @click="format('bold')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-bold"></i></button>
@@ -94,14 +93,14 @@
                         <button type="button" @click="format('insertUnorderedList')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-list-ul"></i></button>
                     </div>
                     <!-- Editor Area -->
-                    <div x-ref="createEditor" contenteditable="true" @input="planning.description = $el.innerHTML" class="editor-content w-full p-6 min-h-[180px] text-sm text-slate-600 focus:outline-none bg-white" data-placeholder="Tuliskan detail konten, script, atau poin-poin utama di sini..."></div>
+                    <div x-ref="createEditor" contenteditable="true" @input="planning.description = $el.innerHTML" class="editor-content w-full p-6 min-h-[180px] text-sm text-slate-600 focus:outline-none bg-white" data-placeholder="Write content details, scripts, or main points here..."></div>
                 </div>
             </div>
 
-            <!-- Tanggal & Prioritas -->
+            <!-- Date & Priority -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 bg-slate-50 rounded-3xl border border-slate-100">
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Mulai</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Start Date</label>
                     <input type="date" x-model="planning.start_date" :min="getTodayDate()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700">
                 </div>
                 <div class="space-y-2">
@@ -109,22 +108,22 @@
                     <input type="date" x-model="planning.due_date" :min="planning.start_date || getTodayDate()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-red-500">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Skala Prioritas</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Priority Scale</label>
                     <select x-model="planning.priority" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700 outline-none">
-                        <option value="urgent">Urgent (Mendesak)</option>
-                        <option value="high">High (Tinggi)</option>
+                        <option value="urgent">Urgent</option>
+                        <option value="high">High</option>
                         <option value="normal">Normal</option>
-                        <option value="low">Low (Rendah)</option>
+                        <option value="low">Low</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Manajemen Tim (Penanggung Jawab) -->
+            <!-- Team Management (Assignees) -->
             <div class="space-y-4">
                 <div class="flex items-center justify-between px-1">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Tim & Jobdesk</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Team & Jobdesk</label>
                     <button type="button" @click="planning.assigned.push({ name: '', jobdesks: [], tools: [], customJob: '', customTool: '' })" class="text-indigo-600 text-xs font-black uppercase tracking-widest hover:text-indigo-700 transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-user-plus"></i> Tambah Anggota
+                        <i class="fa-solid fa-user-plus"></i> Add Member
                     </button>
                 </div>
                 
@@ -136,10 +135,10 @@
                             </button>
                             
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <!-- Input Nama -->
+                                <!-- Name Input -->
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama</label>
-                                    <input type="text" x-model="assign.name" placeholder="Masukkan nama anggota..." class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Name</label>
+                                    <input type="text" x-model="assign.name" placeholder="Enter member name..." class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                                 </div>
 
                                 <!-- Multi Select Jobdesk -->
@@ -147,7 +146,7 @@
                                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jobdesk</label>
                                     <div class="relative">
                                         <button type="button" @click="open = !open" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-left text-sm font-bold text-slate-600 flex justify-between items-center transition-all">
-                                            <span x-text="assign.jobdesks.length ? assign.jobdesks.length + ' Dipilih' : 'Pilih Jobdesk...'"></span>
+                                            <span x-text="assign.jobdesks.length ? assign.jobdesks.length + ' Selected' : 'Select Jobdesk...'"></span>
                                             <i class="fa-solid fa-chevron-down text-[10px]"></i>
                                         </button>
                                         <div x-show="open" @click.outside="open = false" x-cloak class="absolute z-20 top-full mt-2 w-full bg-white border border-slate-200 rounded-2xl shadow-xl py-2 max-h-48 overflow-y-auto custom-scrollbar">
@@ -158,7 +157,7 @@
                                                 </label>
                                             </template>
                                             <div class="px-4 py-2 border-t border-slate-100 mt-1">
-                                                <input type="text" x-model="assign.customJob" @keydown.enter.prevent="if(assign.customJob.trim() !== '') { assign.jobdesks.push(assign.customJob.trim()); assign.customJob = ''; }" placeholder="Ketik lalu Enter..." class="w-full text-xs font-bold p-1 border-b border-slate-200 outline-none focus:border-indigo-400">
+                                                <input type="text" x-model="assign.customJob" @keydown.enter.prevent="if(assign.customJob.trim() !== '') { assign.jobdesks.push(assign.customJob.trim()); assign.customJob = ''; }" placeholder="Type and press Enter..." class="w-full text-xs font-bold p-1 border-b border-slate-200 outline-none focus:border-indigo-400">
                                             </div>
                                         </div>
                                     </div>
@@ -169,7 +168,7 @@
                                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tools</label>
                                     <div class="relative">
                                         <button type="button" @click="open = !open" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-left text-sm font-bold text-slate-600 flex justify-between items-center transition-all">
-                                            <span x-text="assign.tools.length ? assign.tools.length + ' Dipilih' : 'Pilih Tools...'"></span>
+                                            <span x-text="assign.tools.length ? assign.tools.length + ' Selected' : 'Select Tools...'"></span>
                                             <i class="fa-solid fa-chevron-down text-[10px]"></i>
                                         </button>
                                         <div x-show="open" @click.outside="open = false" x-cloak class="absolute z-20 top-full mt-2 w-full bg-white border border-slate-200 rounded-2xl shadow-xl py-2 max-h-48 overflow-y-auto custom-scrollbar">
@@ -180,7 +179,7 @@
                                                 </label>
                                             </template>
                                             <div class="px-4 py-2 border-t border-slate-100 mt-1">
-                                                <input type="text" x-model="assign.customTool" @keydown.enter.prevent="if(assign.customTool.trim() !== '') { assign.tools.push(assign.customTool.trim()); assign.customTool = ''; }" placeholder="Ketik lalu Enter..." class="w-full text-xs font-bold p-1 border-b border-slate-200 outline-none focus:border-indigo-400">
+                                                <input type="text" x-model="assign.customTool" @keydown.enter.prevent="if(assign.customTool.trim() !== '') { assign.tools.push(assign.customTool.trim()); assign.customTool = ''; }" placeholder="Type and press Enter..." class="w-full text-xs font-bold p-1 border-b border-slate-200 outline-none focus:border-indigo-400">
                                             </div>
                                         </div>
                                     </div>
@@ -191,14 +190,14 @@
                 </div>
             </div>
 
-            <!-- Referensi & Aset Media -->
+            <!-- References & Media Asset -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Referensi -->
+                <!-- References -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between px-1">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Link Referensi</label>
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Reference Links</label>
                         <button type="button" @click="planning.references.push('')" class="text-indigo-600 text-[10px] font-black uppercase tracking-widest hover:text-indigo-700 transition-all">
-                            + Tambah Link
+                            + Add Link
                         </button>
                     </div>
                     <template x-for="(ref, rIndex) in planning.references" :key="rIndex">
@@ -214,12 +213,12 @@
                     </template>
                 </div>
 
-                <!-- Tautan Aset Media -->
+                <!-- Media Asset Link -->
                 <div class="space-y-4">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Tautan Aset Media (Opsional)</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Media Asset Link (Optional)</label>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 flex items-center gap-3">
                         <i class="fa-solid fa-cloud-arrow-up text-slate-300"></i>
-                        <input type="text" x-model="planning.media_link" placeholder="Tautan Google Drive / Dropbox..." class="bg-transparent w-full text-sm font-bold text-slate-600 outline-none">
+                        <input type="text" x-model="planning.media_link" placeholder="Google Drive / Dropbox link..." class="bg-transparent w-full text-sm font-bold text-slate-600 outline-none">
                     </div>
                 </div>
             </div>
@@ -228,10 +227,10 @@
         <!-- Footer -->
         <div class="px-8 py-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-4">
             <button type="button" @click="showCreateModal = false" class="px-8 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-all">
-                Batal
+                Cancel
             </button>
             <button type="button" @click="executeCreate()" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transform active:scale-95 transition-all">
-                Buat Perencanaan
+                Create Planning
             </button>
         </div>
     </div>

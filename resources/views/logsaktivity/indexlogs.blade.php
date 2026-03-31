@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Logs Activity - Content Planner')
+@section('title', 'Activity Logs - Content Planner')
 
 @section('content')
 <div class="space-y-6">
@@ -12,19 +12,19 @@
                 <i class="fa-solid fa-clock-rotate-left text-xl"></i>
             </div>
             <div>
-                <h2 class="text-xl font-black text-slate-800 tracking-tight">Logs Activity</h2>
-                <p class="text-xs text-slate-500 font-medium">Riwayat semua aktivitas di sistem</p>
+                <h2 class="text-xl font-black text-slate-800 tracking-tight">Activity Logs</h2>
+                <p class="text-xs text-slate-500 font-medium">History of all activities within the system</p>
             </div>
         </div>
 
         <!-- FILTER FORM -->
         <form method="GET" action="{{ route('logs.index') }}" class="flex flex-wrap items-center gap-3">
             <input type="text" name="search" value="{{ request('search') }}"
-                placeholder="Cari user, aktivitas..."
+                placeholder="Search user, activity..."
                 class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-52">
 
             <select name="module" class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-slate-600 font-semibold">
-                <option value="">Semua Modul</option>
+                <option value="">All Modules</option>
                 @foreach(['Auth','Planning','Notes','Prompt','User'] as $mod)
                     <option value="{{ $mod }}" {{ request('module') == $mod ? 'selected' : '' }}>{{ $mod }}</option>
                 @endforeach
@@ -52,10 +52,10 @@
                 <thead>
                     <tr class="bg-slate-50/80 border-b border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400">
                         <th class="p-5 pl-8">User</th>
-                        <th class="p-5">Aktivitas</th>
-                        <th class="p-5">Modul</th>
-                        <th class="p-5">Aksi</th>
-                        <th class="p-5">Waktu</th>
+                        <th class="p-5">Activity</th>
+                        <th class="p-5">Module</th>
+                        <th class="p-5">Action</th>
+                        <th class="p-5">Time</th>
                         <th class="p-5 text-center">Detail</th>
                     </tr>
                 </thead>
@@ -81,7 +81,7 @@
                             <p class="truncate">{{ $log->activity }}</p>
                         </td>
 
-                        <!-- MODUL -->
+                        <!-- MODULE -->
                         <td class="p-5">
                             @php
                                 $moduleColors = [
@@ -135,7 +135,7 @@
                                     'after'    => $log->after,
                                 ], JSON_HEX_QUOT | JSON_HEX_APOS) }}"
                                 class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-colors shadow-sm mx-auto"
-                                title="Lihat Detail"
+                                title="View Details"
                             >
                                 <i class="fa-solid fa-eye text-xs"></i>
                             </button>
@@ -148,7 +148,7 @@
                             <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
                                 <i class="fa-solid fa-folder-open text-2xl"></i>
                             </div>
-                            <p class="text-slate-500 font-bold">Belum ada log aktivitas.</p>
+                            <p class="text-slate-500 font-bold">No activity logs found.</p>
                         </td>
                     </tr>
                     @endforelse
@@ -160,7 +160,7 @@
         @if($logs->hasPages())
         <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-200 flex items-center justify-between">
             <p class="text-xs text-slate-500 font-medium">
-                Menampilkan {{ $logs->firstItem() }}–{{ $logs->lastItem() }} dari {{ $logs->total() }} data
+                Showing {{ $logs->firstItem() }}–{{ $logs->lastItem() }} of {{ $logs->total() }} entries
             </p>
             <div class="flex items-center gap-1.5">
                 @if($logs->onFirstPage())

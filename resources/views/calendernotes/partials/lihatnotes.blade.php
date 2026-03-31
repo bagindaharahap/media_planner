@@ -1,4 +1,4 @@
-<!-- Modal Lihat Note (Komponen Partial) -->
+<!-- Modal View Note (Partial Component) -->
 <div
     x-show="showLihatNoteModal"
     x-cloak
@@ -17,7 +17,7 @@
         x-transition:enter-start="opacity-0 scale-95 translate-y-8"
         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
     >
-        <!-- Aksen Warna di Bagian Atas Dinamis -->
+        <!-- Dynamic Top Color Accent -->
         <div class="h-3 w-full transition-colors" :class="viewingNote.color"></div>
 
         <!-- Header -->
@@ -42,7 +42,7 @@
         <!-- Body -->
         <div class="p-8 space-y-6">
             <div class="flex items-center gap-3">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Isi Catatan</span>
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Note Content</span>
                 <div class="h-px flex-1 bg-slate-100"></div>
                 <div class="px-3 py-1 rounded-full text-[9px] font-black text-white uppercase tracking-tighter transition-colors" :class="viewingNote.color">
                     Memo
@@ -66,7 +66,6 @@
             </div>
         </div>
 
-        <!-- ... baris kode sebelumnya (Header & Konten) tetap sama ... -->
         <!-- Footer -->
         <div class="px-8 py-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
             <button 
@@ -77,12 +76,12 @@
                 <div class="w-8 h-8 rounded-xl bg-rose-50 flex items-center justify-center group-hover:bg-rose-100 transition-colors">
                     <i class="fa-solid fa-trash-can"></i>
                 </div>
-                Hapus
+                Delete
             </button>
 
             <div class="flex gap-3">
                 <button @click="showLihatNoteModal = false" class="px-6 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-200 transition-all">
-                    Tutup
+                    Close
                 </button>
                 <button 
                     type="button"
@@ -90,7 +89,7 @@
                     class="px-8 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center gap-2"
                 >
                     <i class="fa-solid fa-pen-to-square"></i>
-                    Edit Catatan
+                    Edit Note
                 </button>
             </div>
         </div>

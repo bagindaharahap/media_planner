@@ -13,16 +13,16 @@
         </div>
     </div>
 
-    <!-- x-data DITAMBAH: openPosts, showTerms, dan showPrivacy -->
+    <!-- x-data ADDED: openPosts, showTerms, and showPrivacy -->
     <nav class="flex-1 px-3 md:px-6 space-y-2 mt-4 custom-scrollbar overflow-y-auto pb-4" x-data="{ openPosts: false, showTerms: false, showPrivacy: false }">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2 hidden md:block">Utama</p>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2 hidden md:block">Main</p>
         
         <a href="{{ route('dashboard') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
             <i class="fa-solid fa-layer-group text-lg md:text-sm"></i>
-            <span class="font-semibold text-sm hidden md:block">Dasbor</span>
+            <span class="font-semibold text-sm hidden md:block">Dashboard</span>
         </a>
         
-        <!-- Dropdown Menu Jadwal Konten -->
+        <!-- Content Schedule Dropdown Menu -->
         <div class="relative" @click.outside="openPosts = false">
             <button 
                 @click="openPosts = !openPosts" 
@@ -30,7 +30,7 @@
                 :class="openPosts ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-slate-50'"
             >
                 <i class="fa-solid fa-calendar-check text-lg md:text-sm"></i>
-                <span class="font-semibold text-sm hidden md:block flex-1 text-left">Jadwal Konten</span>
+                <span class="font-semibold text-sm hidden md:block flex-1 text-left">Content Schedule</span>
                 <i 
                     class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300 hidden md:block" 
                     :class="openPosts ? 'rotate-180' : ''"
@@ -54,7 +54,7 @@
                 </a>
                 
                 <a href="{{ route('calendar.index') }}" class="block px-4 py-2 text-xs font-bold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-all border-l-2 border-transparent hover:border-indigo-400">
-                    Calender Note
+                    Calendar Notes
                 </a>
             </div>
         </div>
@@ -68,66 +68,66 @@
         </a>
 
         <!-- ========================================== -->
-        <!-- MENU: MANAGEMENT AKUN (Hanya Admin)        -->
+        <!-- MENU: ACCOUNT MANAGEMENT (Admin Only)      -->
         <!-- ========================================== -->
         @if(Auth::check() && strtolower(Auth::user()->role) === 'admin')
             <a href="{{ route('users.index') }}" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 {{ request()->routeIs('users.index') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
                 <i class="fa-solid fa-users-gear text-lg md:text-sm"></i>
-                <span class="font-semibold text-sm hidden md:block">Management Akun</span>
+                <span class="font-semibold text-sm hidden md:block">Account Management</span>
             </a>
         @endif
 
         <!-- ========================================== -->
-        <!-- MENU: LOGS ACTIVITY                        -->
+        <!-- MENU: ACTIVITY LOGS                        -->
         <!-- ========================================== -->
         <a href="{{ route('logs.index') }}" 
             class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 
             {{ request()->routeIs('logs.index') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' }} 
             rounded-xl transition-all">
                 <i class="fa-solid fa-clock-rotate-left text-lg md:text-sm"></i>
-                <span class="font-semibold text-sm hidden md:block">Logs Activity</span>
+                <span class="font-semibold text-sm hidden md:block">Activity Logs</span>
         </a>
         
         <!-- ========================================== -->
-        <!-- MENU: AKUN SOSIAL MEDIA                    -->
+        <!-- MENU: SOCIAL MEDIA ACCOUNTS                -->
         <!-- ========================================== -->
         <div class="pt-6 hidden md:block">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2">Akun</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2">Social Accounts</p>
             <a href="{{ route('instagram.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('instagram.index') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
                 <div class="flex items-center gap-3">
                     <i class="fa-brands fa-instagram text-pink-500"></i>
                     <span class="font-semibold text-sm">Instagram</span>
                 </div>
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" title="API Terhubung"></span>
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" title="API Connected"></span>
             </a>
             <a href="{{ route('tiktok.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('tiktok.index') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all mt-1">
                 <div class="flex items-center gap-3">
                     <i class="fa-brands fa-tiktok text-slate-900"></i>
                     <span class="font-semibold text-sm">TikTok</span>
                 </div>
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" title="API Terhubung"></span>
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" title="API Connected"></span>
             </a>
         </div>
 
         <!-- ========================================== -->
-        <!-- MENU LEGAL & PRIVACY                       -->
+        <!-- MENU: LEGAL & PRIVACY                      -->
         <!-- ========================================== -->
         <div class="pt-6">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2 hidden md:block">Legal</p>
             
-            <!-- Tombol Pemicu Modal Terms -->
+            <!-- Terms Modal Trigger Button -->
             <button type="button" @click="showTerms = true" class="w-full flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all">
                 <i class="fa-solid fa-file-contract text-lg md:text-sm"></i>
                 <span class="font-semibold text-sm hidden md:block text-left">Terms & Conditions</span>
             </button>
             
-            <!-- Tombol Pemicu Modal Privacy -->
+            <!-- Privacy Modal Trigger Button -->
             <button type="button" @click="showPrivacy = true" class="w-full flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all mt-1">
                 <i class="fa-solid fa-shield text-lg md:text-sm"></i>
                 <span class="font-semibold text-sm hidden md:block text-left">Privacy Policy</span>
             </button>
 
-            <!-- Modal Terms -->
+            <!-- Terms & Conditions Modal -->
             <template x-teleport="body">
                 <div x-show="showTerms" x-cloak class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
                      x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -141,8 +141,8 @@
                                     <i class="fa-solid fa-file-contract"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Syarat dan Ketentuan</h3>
-                                    <p class="text-xs text-slate-500 font-medium">Internal Perusahaan</p>
+                                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Terms & Conditions</h3>
+                                    <p class="text-xs text-slate-500 font-medium">Internal Company Policy</p>
                                 </div>
                             </div>
                             <button @click="showTerms = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
@@ -151,14 +151,14 @@
                         </div>
 
                         <div class="flex-1 overflow-y-auto p-8 text-sm text-slate-600 leading-relaxed custom-scrollbar">
-                            <!-- Memanggil isi dari folder components -->
+                            <!-- Including content components -->
                             @include('terms')
                         </div>
                     </div>
                 </div>
             </template>
 
-            <!-- Modal Privacy Policy -->
+            <!-- Privacy Policy Modal -->
             <template x-teleport="body">
                 <div x-show="showPrivacy" x-cloak class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
                      x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -172,8 +172,8 @@
                                     <i class="fa-solid fa-shield text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Kebijakan Privasi</h3>
-                                    <p class="text-xs text-slate-500 font-medium">Internal Perusahaan</p>
+                                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Privacy Policy</h3>
+                                    <p class="text-xs text-slate-500 font-medium">Internal Company Policy</p>
                                 </div>
                             </div>
                             <button @click="showPrivacy = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
@@ -182,7 +182,7 @@
                         </div>
 
                         <div class="flex-1 overflow-y-auto p-8 text-sm text-slate-600 leading-relaxed custom-scrollbar">
-                            <!-- Memanggil isi dari folder components -->
+                            <!-- Including content components -->
                             @include('privacy')
                         </div>
                     </div>
@@ -210,7 +210,7 @@
             @csrf
             <button type="submit" class="w-full flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-all">
                 <i class="fa-solid fa-arrow-right-from-bracket text-lg md:text-sm"></i>
-                <span class="font-semibold text-sm hidden md:block">Keluar</span>
+                <span class="font-semibold text-sm hidden md:block">Logout</span>
             </button>
         </form>
     </div>

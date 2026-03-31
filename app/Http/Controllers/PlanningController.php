@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User; // Tambahkan ini untuk memanggil data Admin
+use App\Models\User; 
 use App\Models\Planning;
 use App\Models\Note;
 use Illuminate\Http\Request;
@@ -11,14 +11,18 @@ use App\Notifications\ContentReviewNotification;
 
 class PlanningController extends Controller
 {
-    // Menampilkan halaman board
+    /**
+     * Menampilkan halaman board planning.
+     */
     public function index()
     {
         $plannings = Planning::all();
         return view('boardplanning.indexboard', compact('plannings'));
     }
 
-    // Menyimpan data baru (Create)
+    /**
+     * Menyimpan data planning baru.
+     */
     public function store(Request $request)
     {
         $data = $request->only([
@@ -27,9 +31,7 @@ class PlanningController extends Controller
             'assigned', 'references', 'media_link', 'revision_note'
         ]);
 
-        // Pastikan assigned dan references tersimpan sebagai JSON
         if (isset($data['assigned']) && is_array($data['assigned'])) {
-            // Bersihkan field customJob dan customTool yang tidak perlu disimpan
             $data['assigned'] = array_map(function($a) {
                 return [
                     'name' => $a['name'] ?? '',
@@ -40,17 +42,18 @@ class PlanningController extends Controller
         }
 
         $planning = Planning::create($data);
-        ActivityLogger::log('Planning', 'create', 'Membuat planning baru: ' . $planning->title, null, $planning->toArray());
+        ActivityLogger::log('Planning', 'create', 'Created new planning: ' . $planning->title, null, $planning->toArray());
+        
         return response()->json(['success' => true, 'data' => $planning]);
     }
 
-    // Mengupdate data (Update)
+    /**
+     * Memperbarui data planning.
+     */
     public function update(Request $request, $id)
     {
         $planning = Planning::findOrFail($id);
         $before = $planning->toArray();
-        
-        // Simpan status lama untuk pengecekan notifikasi
         $statusLama = $planning->status;
 
         $data = $request->only([
@@ -59,7 +62,6 @@ class PlanningController extends Controller
             'assigned', 'references', 'media_link', 'revision_note'
         ]);
 
-        // Bersihkan field customJob dan customTool jika ada
         if (isset($data['assigned']) && is_array($data['assigned'])) {
             $data['assigned'] = array_map(function($a) {
                 return [
@@ -70,40 +72,38 @@ class PlanningController extends Controller
             }, $data['assigned']);
         }
 
-        // Jalankan proses update ke database
         $planning->update($data);
         
-        // =========================================================
-        // LOGIKA NOTIFIKASI
-        // Jika status lama BUKAN 'review' tapi sekarang diubah ke 'review'
-        // =========================================================
         $statusBaru = $planning->fresh()->status;
         
+        // Notifikasi ke Admin jika status berubah menjadi 'review'
         if ($statusLama !== 'review' && $statusBaru === 'review') {
-            // Cari semua akun yang memiliki role Admin (Pastikan tulisan 'Admin' sesuai dengan format db Anda)
             $admins = User::where('role', 'Admin')->get(); 
-            
-            // Kirim notifikasi ke semua admin
             foreach ($admins as $admin) {
                 $admin->notify(new ContentReviewNotification($planning));
             }
         }
-        // =========================================================
 
-        ActivityLogger::log('Planning', 'update', 'Memperbarui planning: ' . $planning->title, $before ?? [], $planning->fresh()->toArray());
+        ActivityLogger::log('Planning', 'update', 'Updated planning: ' . $planning->title, $before, $planning->fresh()->toArray());
+        
         return response()->json(['success' => true, 'data' => $planning]);
     }
 
-    // Menghapus data (Delete)
+    /**
+     * Menghapus planning.
+     */
     public function destroy($id)
     {
         $planning = Planning::findOrFail($id);
-        ActivityLogger::log('Planning', 'delete', 'Menghapus planning: ' . $planning->title, $planning->toArray(), null);
+        ActivityLogger::log('Planning', 'delete', 'Deleted planning: ' . $planning->title, $planning->toArray(), null);
         $planning->delete();
+        
         return response()->json(['success' => true]);
     }
 
-    // Method untuk menangani File Upload
+    /**
+     * Menangani upload media ke penyimpanan lokal.
+     */
     public function uploadMedia(Request $request)
     {
         if ($request->hasFile('media_file')) {
@@ -117,17 +117,19 @@ class PlanningController extends Controller
             ]);
         }
 
-        return response()->json(['success' => false, 'message' => 'File tidak terdeteksi'], 400);
+        return response()->json(['success' => false, 'message' => 'File not detected'], 400);
     }
 
-    // ==========================================
-    // FUNGSI BARU UNTUK HALAMAN KALENDER
-    // ==========================================
+    /**
+     * Menampilkan halaman Kalender dan Catatan.
+     * PERBAIKAN: Nama view disesuaikan dengan folder resources/views/calendernotes/
+     */
     public function calendar() 
     {
         $plannings = Planning::all(); 
-        $notes = Note::all(); // Mengambil data notes dari database
+        $notes = Note::all(); 
         
-        return view('calendarnotes.calendarnotesindex', compact('plannings', 'notes'));
+        // Mengubah 'calendarnotes' menjadi 'calendernotes' agar sesuai folder
+        return view('calendernotes.calendernotesindex', compact('plannings', 'notes'));
     }
 }

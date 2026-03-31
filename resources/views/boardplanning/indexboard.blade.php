@@ -4,12 +4,12 @@
 
 @section('content')
 
-<!-- Menyimpan data dari Laravel ke dalam tag script agar aman dari error tanda kutip (quotes) di atribut HTML -->
+<!-- Storing Laravel data into a script tag to prevent quote escaping issues in HTML attributes -->
 <script id="plannings-data" type="application/json">
     {!! json_encode($plannings ?? []) !!}
 </script>
 
-<!-- Wrapper utama dengan Alpine.js untuk state Global -->
+<!-- Main wrapper with Alpine.js for global state management -->
 <div 
     x-data="{ 
         userRole: '{{ Auth::user()->role ?? 'Content Planner' }}',
@@ -33,7 +33,7 @@
             { id: 'backlog', name: 'Draft' },
             { id: 'progress', name: 'In Progress' },
             { id: 'review', name: 'In Review' },
-            { id: 'revisi', name: 'Revisi' },
+            { id: 'revisi', name: 'Revision' },
             { id: 'hold_on', name: 'Hold On' },
             { id: 'approved', name: 'Approved' },
             { id: 'published', name: 'Published' }
@@ -41,7 +41,7 @@
 
         tasks: [],
 
-        // --- FALLBACK VARIABLES UNTUK SORTABLE.JS ---
+        // --- FALLBACK VARIABLES FOR SORTABLE.JS ---
         task: { assigned: [] }, 
         assignee: {},
         idx: 0,
@@ -63,8 +63,8 @@
         viewingPlanning: { assigned: [], references: [] },
 
         userOptions: ['Dina', 'Adelsa', 'Lisa', 'Putri'],
-        jobdeskOptions: ['Content Planner', 'Copywriting', 'Script writing', 'Dokumentasi', 'Editor Video', 'Desain Grafis', 'Upload Story', 'Ide content'],
-        toolOptions: ['Gemini', 'Chatgpt', 'Spreedsheet', 'Kamera', 'HP', 'Capcut', 'Canva', 'Figma', 'Instagram', 'WA', 'Adobe', 'Tiktok'],
+        jobdeskOptions: ['Content Planner', 'Copywriting', 'Script writing', 'Documentation', 'Video Editor', 'Graphic Design', 'Upload Story', 'Content Ideas'],
+        toolOptions: ['Gemini', 'ChatGPT', 'Spreadsheet', 'Camera', 'Mobile', 'Capcut', 'Canva', 'Figma', 'Instagram', 'WA', 'Adobe', 'TikTok'],
         contentTypeOptions: ['TikTok', 'Reels', 'Feed', 'Story'],
         priorityOrder: { urgent: 0, high: 1, normal: 2, low: 3 },
 
@@ -99,7 +99,7 @@
                 });
                 this.sortAllTasks();
             } catch(e) {
-                console.error('Gagal memuat data plannings:', e);
+                console.error('Failed to load planning data:', e);
                 this.tasks = [];
             }
         },
@@ -147,7 +147,7 @@
                 let today = this.getTodayDate();
                 if (!this.planning.start_date) this.planning.start_date = today;
                 if (this.planning.start_date < today) {
-                    alert('Tanggal mulai tidak boleh kurang dari hari ini!');
+                    alert('Start date cannot be earlier than today!');
                     return;
                 }
 
@@ -256,24 +256,21 @@
             return priorityBadges[priority] || 'bg-slate-100 text-slate-500';
         },
 
-        /* Fungsi helper untuk membatalkan perpindahan visual card di Alpine.js */
         revertDOM(task) {
             let originalStatus = task.status;
             task.status = 'refreshing';
             setTimeout(() => { task.status = originalStatus; }, 50);
         },
 
-        /* Fungsi eksekusi Update Database saat card berhasil dipindah */
         executeMoveTask(task, newStatus) {
             task.status = newStatus;
             fetch(`/board-planning/${task.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.getCsrfToken() },
                 body: JSON.stringify({ status: newStatus })
-            }).catch(err => console.error('Gagal memindahkan task:', err));
+            }).catch(err => console.error('Failed to move task:', err));
         },
 
-        /* --- Inisialisasi Sortable dan VALIDASI Drag & Drop --- */
         initSortable(el) {
             new Sortable(el, {
                 group: 'kanban',
@@ -288,41 +285,39 @@
                     const taskId = evt.item.getAttribute('data-id');
                     const newStatus = el.getAttribute('data-status');
                     
-                    /* AlpineJS harus tetap mengatur DOM-nya sendiri */
                     evt.item.remove();
                     const task = this.tasks.find(t => t.id == taskId);
                     
                     if (task && task.status !== newStatus) {
                         
-                        // 1. VALIDASI MEDIA LINK (Keduanya: Admin & Content Planner)
+                        // 1. MEDIA LINK VALIDATION (Admin & Content Planner)
                         const requiresMediaStatuses = ['review', 'revisi', 'hold_on', 'approved', 'published'];
                         if (requiresMediaStatuses.includes(newStatus) && (!task.media_link || task.media_link.trim() === '')) {
                             this.taskNeedsMedia = task;
                             this.showMediaWarningModal = true;
-                            this.revertDOM(task); // Batalkan perpindahan
+                            this.revertDOM(task); 
                             return; 
                         }
 
-                        // 2. VALIDASI ROLE AKSES (Khusus selain Admin)
+                        // 2. ROLE ACCESS VALIDATION (Non-Admins)
                         if (this.userRole !== 'Admin') {
                             const forbiddenDestinations = ['hold_on', 'approved'];
-                            // Blokir hanya jika Destinasi (Tujuan)-nya adalah Hold On atau Approved
                             if (forbiddenDestinations.includes(newStatus)) {
                                 this.showRoleWarningModal = true;
-                                this.revertDOM(task); // Batalkan perpindahan
+                                this.revertDOM(task); 
                                 return;
                             }
                         }
 
-                        // 3. VALIDASI PUBLISH (Konfirmasi Upload Drive - Untuk Keduanya)
+                        // 3. PUBLISH VALIDATION (Drive Archive Confirmation)
                         if (newStatus === 'published') {
                             this.taskToPublish = task;
                             this.showPublishConfirmModal = true;
-                            this.revertDOM(task); // Batalkan visual sementara sampai di-Konfirmasi
+                            this.revertDOM(task); 
                             return;
                         }
 
-                        // 4. JIKA LOLOS SEMUA VALIDASI, SIMPAN PERUBAHAN
+                        // 4. EXECUTE SAVE
                         this.executeMoveTask(task, newStatus);
                     }
                 }
@@ -331,19 +326,19 @@
     }"
     class="h-[calc(100vh-120px)] flex flex-col relative"
 >
-    <!-- Header Board -->
+    <!-- Board Header -->
     <div class="flex items-center justify-between mb-6 px-2 text-slate-800">
         <div>
-            <h1 class="text-2xl font-bold tracking-tight">Perencanaan Konten</h1>
-            <p class="text-sm text-slate-500">Visualisasi alur kerja tim dan manajemen tugas.</p>
+            <h1 class="text-2xl font-bold tracking-tight">Content Planning</h1>
+            <p class="text-sm text-slate-500">Team workflow visualization and task management.</p>
         </div>
         <button type="button" @click="showCreateModal = true" class="bg-indigo-600 text-white px-6 py-2.5 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all flex items-center gap-2">
             <i class="fa-solid fa-plus text-xs"></i>
-            Buat Planning
+            Create Planning
         </button>
     </div>
 
-    <!-- Container Board -->
+    <!-- Board Container -->
     <div class="flex-1 overflow-x-auto pb-6 custom-scrollbar">
         <div class="flex gap-6 min-w-max h-full items-start">
             
@@ -352,7 +347,7 @@
                     ['id' => 'backlog', 'name' => 'Draft', 'color' => 'slate', 'icon' => 'fa-circle-notch'],
                     ['id' => 'progress', 'name' => 'In Progress', 'color' => 'indigo', 'icon' => 'fa-play'],
                     ['id' => 'review', 'name' => 'In Review', 'color' => 'red', 'icon' => 'fa-eye'],
-                    ['id' => 'revisi', 'name' => 'Revisi', 'color' => 'amber', 'icon' => 'fa-rotate-left'],
+                    ['id' => 'revisi', 'name' => 'Revision', 'color' => 'amber', 'icon' => 'fa-rotate-left'],
                     ['id' => 'hold_on', 'name' => 'Hold On', 'color' => 'orange', 'icon' => 'fa-pause'],
                     ['id' => 'approved', 'name' => 'Approved', 'color' => 'blue', 'icon' => 'fa-check-double'],
                     ['id' => 'published', 'name' => 'Published', 'color' => 'emerald', 'icon' => 'fa-paper-plane'],
@@ -385,14 +380,14 @@
                             class="kanban-item bg-white p-5 rounded-3xl shadow-sm border transition-colors transition-shadow duration-200 group relative hover:shadow-md cursor-grab active:cursor-grabbing" 
                             :class="selectedTasks.includes(task.id) ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-slate-100 hover:border-indigo-200'"
                         >
-                            <!-- Tombol Aksi -->
+                            <!-- Action Buttons -->
                             <div class="flex items-center gap-2 absolute top-4 right-4 z-10">
                                 <button type="button" @click.stop="openEdit(task)" class="text-slate-300 hover:text-indigo-600 transition-colors"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
                                 <button type="button" @click.stop="confirmDelete(task.id)" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fa-solid fa-trash text-xs"></i></button>
                                 <input type="checkbox" @click.stop :value="task.id" x-model="selectedTasks" class="task-checkbox w-4 h-4 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                             </div>
 
-                            <!-- Konten Kartu -->
+                            <!-- Card Content -->
                             <div class="space-y-4">
                                 <div class="flex flex-wrap gap-2 pr-12">
                                     <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-black rounded-lg uppercase tracking-tighter" x-text="task.content_type"></span>
@@ -403,7 +398,7 @@
                                 
                                 <div class="flex items-center justify-between mt-4">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <!-- Jika ada Penjab (Minimal 1) -->
+                                        <!-- Assigned Users -->
                                         <template x-if="task.assigned && task.assigned.length > 0 && task.assigned[0].name">
                                             <div class="flex items-center gap-2">
                                                 <template x-for="(assignee, idx) in task.assigned.slice(0, 2)" :key="idx">
@@ -413,7 +408,6 @@
                                                         <span class="text-[10px] font-bold text-slate-600" x-text="assignee.name ? assignee.name.split(' ')[0] : ''"></span>
                                                     </div>
                                                 </template>
-                                                <!-- Jika ada lebih dari 2 penjab -->
                                                 <template x-if="task.assigned.length > 2">
                                                     <div class="w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 text-[9px] font-bold" 
                                                         x-text="'+' + (task.assigned.length - 2)"></div>
@@ -421,11 +415,11 @@
                                             </div>
                                         </template>
 
-                                        <!-- Jika belum ada penjab yang ditentukan -->
+                                        <!-- Unassigned State -->
                                         <template x-if="!task.assigned || task.assigned.length === 0 || !task.assigned[0].name">
                                             <div class="flex items-center gap-1.5 text-slate-400">
                                                 <i class="fa-solid fa-user-xmark text-[10px]"></i>
-                                                <span class="text-[10px] font-bold italic">Belum diassign</span>
+                                                <span class="text-[10px] font-bold italic">Unassigned</span>
                                             </div>
                                         </template>
                                     </div>
@@ -435,7 +429,7 @@
 
                                 <div class="grid grid-cols-2 gap-2 text-slate-600">
                                     <div>
-                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Mulai</p>
+                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Start</p>
                                         <span class="text-[10px] font-bold text-slate-500 italic" x-text="task.start_date || '-'"></span>
                                     </div>
                                     <div>
@@ -456,14 +450,14 @@
     <div x-show="selectedTasks.length > 0" x-cloak class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white shadow-2xl border border-slate-200 rounded-full px-8 py-4 flex items-center gap-8 z-[100] min-w-[550px]">
         <div class="flex items-center gap-3 pr-6 border-r border-slate-200">
             <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md" x-text="selectedTasks.length"></span>
-            <span class="text-slate-600 font-bold text-sm">Item Terpilih</span>
+            <span class="text-slate-600 font-bold text-sm">Items Selected</span>
         </div>
         <div class="flex items-center gap-6">
             <button type="button" class="flex items-center gap-2 text-slate-600 hover:text-indigo-600 font-bold text-sm transition-colors">
-                <i class="fa-solid fa-arrow-right-arrow-left"></i> Pindahkan
+                <i class="fa-solid fa-arrow-right-arrow-left"></i> Move
             </button>
             <button type="button" @click="confirmDelete()" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-bold text-sm transition-colors">
-                <i class="fa-solid fa-trash-can"></i> Hapus Massal
+                <i class="fa-solid fa-trash-can"></i> Bulk Delete
             </button>
         </div>
         <button type="button" @click="selectedTasks = []" class="ml-auto w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600">
@@ -471,54 +465,54 @@
         </button>
     </div>
 
-    <!-- Modal Delete -->
+    <!-- Delete Modal -->
     <div x-show="showDeleteModal" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div @click.outside="showDeleteModal = false" class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 text-center">
             <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner"><i class="fa-solid fa-triangle-exclamation"></i></div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-2">Hapus Perencanaan?</h3>
-            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Tindakan ini permanen. Apakah Anda yakin?</p>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">Delete Planning?</h3>
+            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">This action is permanent. Are you sure?</p>
             <div class="flex gap-4">
-                <button type="button" @click="showDeleteModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Batal</button>
-                <button type="button" @click="executeDelete()" class="flex-1 px-6 py-3.5 bg-red-500 text-white rounded-2xl font-bold shadow-xl shadow-red-100 hover:bg-red-600 transform active:scale-95 transition-all">Hapus</button>
+                <button type="button" @click="showDeleteModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Cancel</button>
+                <button type="button" @click="executeDelete()" class="flex-1 px-6 py-3.5 bg-red-500 text-white rounded-2xl font-bold shadow-xl shadow-red-100 hover:bg-red-600 transform active:scale-95 transition-all">Delete</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Peringatan Aset Media -->
+    <!-- Media Asset Warning Modal -->
     <div x-show="showMediaWarningModal" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div @click.outside="showMediaWarningModal = false" class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 text-center">
             <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner"><i class="fa-solid fa-link-slash"></i></div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-2">Aset Media Kosong!</h3>
-            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Perencanaan ini tidak dapat dipindahkan ke tahap <b>Review, Revisi, Hold On, Approved, atau Publish</b> karena tautan aset media (Google Drive) belum dilampirkan.</p>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">Media Asset Empty!</h3>
+            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">This planning cannot be moved to <b>Review, Revision, Hold On, Approved, or Published</b> stages because the media asset link (Google Drive) has not been attached.</p>
             <div class="flex gap-4">
-                <button type="button" @click="showMediaWarningModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Nanti</button>
+                <button type="button" @click="showMediaWarningModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Later</button>
                 <button type="button" @click="showMediaWarningModal = false; openEdit(taskNeedsMedia)" class="flex-1 px-6 py-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-xl shadow-indigo-100 hover:bg-indigo-700 transform active:scale-95 transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-pen-to-square"></i> Isi Sekarang
+                    <i class="fa-solid fa-pen-to-square"></i> Fill Now
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Peringatan Role Content Planner -->
+    <!-- Role Restriction Warning Modal -->
     <div x-show="showRoleWarningModal" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div @click.outside="showRoleWarningModal = false" class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 text-center">
             <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner"><i class="fa-solid fa-hand"></i></div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-2">Akses Dibatasi!</h3>
-            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Sebagai Content Planner, Anda tidak diizinkan untuk memindahkan tugas ke tahap <b>Hold On</b> atau <b>Approved</b>. Silakan hubungi Admin.</p>
-            <button type="button" @click="showRoleWarningModal = false" class="w-full px-6 py-3.5 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all">Mengerti</button>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">Access Restricted!</h3>
+            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">As a Content Planner, you are not authorized to move tasks to <b>Hold On</b> or <b>Approved</b> stages. Please contact an Admin.</p>
+            <button type="button" @click="showRoleWarningModal = false" class="w-full px-6 py-3.5 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all">Understood</button>
         </div>
     </div>
 
-    <!-- Modal Konfirmasi Publish -->
+    <!-- Publish Confirmation Modal -->
     <div x-show="showPublishConfirmModal" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div @click.outside="showPublishConfirmModal = false" class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 text-center">
             <div class="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-2">Konfirmasi Arsip</h3>
-            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Sebelum dipublikasikan, apakah konten ini sudah benar-benar di-upload ke Google Drive sebagai arsip/pertinggalan?</p>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">Archive Confirmation</h3>
+            <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Before publishing, has this content been uploaded to Google Drive as an archive?</p>
             <div class="flex gap-4">
-                <button type="button" @click="showPublishConfirmModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Belum</button>
-                <button type="button" @click="executeMoveTask(taskToPublish, 'published'); showPublishConfirmModal = false" class="flex-[1.5] px-6 py-3.5 bg-emerald-500 text-white rounded-2xl font-bold shadow-xl shadow-emerald-100 hover:bg-emerald-600 transform active:scale-95 transition-all">
-                    Sudah, Publikasikan
+                <button type="button" @click="showPublishConfirmModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Not yet</button>
+                <button type="button" @click="executeMoveTask(taskToPublish, 'published'); showPublishConfirmModal = false" class="flex-[1.5] px-6 py-3.5 bg-emerald-50 text-white rounded-2xl font-bold shadow-xl shadow-emerald-100 hover:bg-emerald-600 transform active:scale-95 transition-all">
+                    Yes, Publish
                 </button>
             </div>
         </div>

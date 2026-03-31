@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kalender Konten - Content Planner')
+@section('title', 'Content Calendar - PlannerX')
 
 @section('content')
 
@@ -20,7 +20,7 @@
     <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-2xl mb-6 shadow-sm relative z-10">
         <div class="flex items-center gap-3 mb-2">
             <i class="fa-solid fa-exclamation-circle text-rose-500 text-xl"></i>
-            <span class="font-semibold">Terjadi kesalahan:</span>
+            <span class="font-semibold">An error occurred:</span>
         </div>
         <ul class="list-disc list-inside text-sm space-y-1">
             @foreach($errors->all() as $error)
@@ -29,6 +29,7 @@
         </ul>
     </div>
 @endif
+
 <script id="plannings-data" type="application/json">
     {!! json_encode($plannings ?? []) !!}
 </script>
@@ -57,10 +58,7 @@ x-data="{
     editingNote: {},
     loadingNotes: false,
 
-    allNotes: [
-        { id: 'n1', title: 'Ide Konten Ramadhan', content: 'Video resep takjil 30 detik.', color: 'bg-emerald-500', date: '2026-03-12' },
-        { id: 'n2', title: 'Reminder Live', content: 'Jam 19:00 WIB di TikTok.', color: 'bg-rose-500', date: '2026-03-12' }
-    ],
+    allNotes: [],
 
     planning: {
         status: 'backlog',
@@ -84,7 +82,7 @@ x-data="{
         date: ''
     },
     
-    months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+    months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     years: [],
     days: [],
     
@@ -92,15 +90,15 @@ x-data="{
         { id: 'backlog', name: 'Backlog' },
         { id: 'progress', name: 'In Progress' },
         { id: 'review', name: 'In Review' },
-        { id: 'revisi', name: 'Revisi' },
+        { id: 'revisi', name: 'Revision' },
         { id: 'hold_on', name: 'Hold On' },
         { id: 'approved', name: 'Approved' },
         { id: 'published', name: 'Published' }
     ],
 
     userOptions: ['Dina', 'Adelsa', 'Lisa', 'Putri'],
-    jobdeskOptions: ['Content Planner', 'Copywriting', 'Script writing', 'Editor Video', 'Desain Grafis'],
-    toolOptions: ['Capcut', 'Canva', 'Figma', 'Instagram', 'Tiktok'],
+    jobdeskOptions: ['Content Planner', 'Copywriting', 'Script writing', 'Video Editor', 'Graphic Design'],
+    toolOptions: ['Capcut', 'Canva', 'Figma', 'Instagram', 'TikTok'],
 
     allTasks: [],
     priorityOrder: { urgent: 0, high: 1, normal: 2, low: 3 },
@@ -125,7 +123,7 @@ x-data="{
                 return task;
             });
         } catch(e) {
-            console.error('Gagal memuat data plannings:', e);
+            console.error('Failed to load planning data:', e);
             this.allTasks = [];
         }
 
@@ -157,7 +155,7 @@ x-data="{
             const res = await fetch('/notes', {
                 headers: { 'Accept': 'application/json' }
             });
-            if (!res.ok) throw new Error('Gagal mengambil data catatan');
+            if (!res.ok) throw new Error('Failed to fetch notes');
             const data = await res.json();
             this.allNotes = (data || []).map(n => ({
                 color: 'bg-indigo-500',
@@ -165,7 +163,7 @@ x-data="{
                 color: n.color || 'bg-indigo-500'
             }));
         } catch(e) {
-            console.error('Gagal memuat catatan:', e);
+            console.error('Failed to load notes:', e);
             this.allNotes = [];
         } finally {
             this.loadingNotes = false;
@@ -322,16 +320,17 @@ x-data="{
                 body: JSON.stringify(payload)
             });
 
-            if (!res.ok) throw new Error('Gagal menyimpan catatan');
+            if (!res.ok) throw new Error('Failed to save note');
             const data = await res.json();
             if (data.note) this.allNotes.push(data.note);
-        } catch(e) {
-            console.error('Error simpan catatan:', e);
-        } finally {
-            AppPopup.success('Berhasil', 'Catatan berhasil dibuat');
+            
+            AppPopup.success('Success', 'Note successfully created');
             this.showCreateChoiceModal = false;
             this.isWritingNote = false;
             this.noteData = { title: '', content: '', color: 'bg-indigo-500', date: '' };
+        } catch(e) {
+            console.error('Error saving note:', e);
+            AppPopup.success('Error', 'Failed to create note');
         }
     },
 
@@ -347,7 +346,6 @@ x-data="{
     },
 
     async updateNote() {
-        AppPopup.success('Berhasil', 'Catatan berhasil diperbarui');
         if (!this.editingNote?.id) return;
         try {
             const res = await fetch(`/notes/${this.editingNote.id}`, {
@@ -359,16 +357,17 @@ x-data="{
                 },
                 body: JSON.stringify(this.editingNote)
             });
-            if (!res.ok) throw new Error('Gagal memperbarui catatan');
+            if (!res.ok) throw new Error('Failed to update note');
             const data = await res.json();
             let index = this.allNotes.findIndex(n => n.id === this.editingNote.id);
             if (index !== -1 && data.note) {
                 this.allNotes[index] = data.note;
                 this.viewingNote = JSON.parse(JSON.stringify(data.note));
             }
+            AppPopup.success('Success', 'Note successfully updated');
             this.showEditNoteModal = false;
         } catch(e) {
-            console.error('Error update catatan:', e);
+            console.error('Error updating note:', e);
         }
     },
 
@@ -376,8 +375,8 @@ x-data="{
         if (!id) return;
 
         AppPopup.confirmDelete(
-            'Hapus Catatan',
-            'Yakin ingin menghapus catatan ini?',
+            'Delete Note',
+            'Are you sure you want to delete this note?',
             async () => {
                 this.showLihatNoteModal = false;
                 try {
@@ -389,14 +388,13 @@ x-data="{
                         }
                     });
 
-                    if (!res.ok) throw new Error('Gagal menghapus catatan');
+                    if (!res.ok) throw new Error('Failed to delete note');
 
                     this.allNotes = this.allNotes.filter(n => n.id !== id);
-
-                    AppPopup.success('Berhasil', 'Catatan berhasil dihapus');
+                    AppPopup.success('Success', 'Note successfully deleted');
 
                 } catch(e) { 
-                    console.error('Error hapus catatan:', e); 
+                    console.error('Error deleting note:', e); 
                 }
             }
         );
@@ -472,37 +470,21 @@ x-data="{
     },
 
     addAssigned(mode = 'edit') {
-        let target;
-        if (mode === 'create') target = this.planning;
-        else if (mode === 'edit') target = this.editingPlanning;
-        else target = this.viewingPlanning;
-        
+        let target = mode === 'create' ? this.planning : this.editingPlanning;
         if (!target.assigned) target.assigned = [];
         target.assigned.push({ name: '', jobdesks: [], tools: [] });
     },
     removeAssigned(mode = 'edit', index) {
-        let target;
-        if (mode === 'create') target = this.planning;
-        else if (mode === 'edit') target = this.editingPlanning;
-        else target = this.viewingPlanning;
-
+        let target = mode === 'create' ? this.planning : this.editingPlanning;
         if(target.assigned.length > 1) target.assigned.splice(index, 1);
     },
     addReference(mode = 'edit') {
-        let target;
-        if (mode === 'create') target = this.planning;
-        else if (mode === 'edit') target = this.editingPlanning;
-        else target = this.viewingPlanning;
-
+        let target = mode === 'create' ? this.planning : this.editingPlanning;
         if (!target.references) target.references = [];
         target.references.push('');
     },
     removeReference(mode = 'edit', index) {
-        let target;
-        if (mode === 'create') target = this.planning;
-        else if (mode === 'edit') target = this.editingPlanning;
-        else target = this.viewingPlanning;
-
+        let target = mode === 'create' ? this.planning : this.editingPlanning;
         if(target.references.length > 1) target.references.splice(index, 1);
     },
 
@@ -532,15 +514,15 @@ x-data="{
 class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-2xl relative"
 >
 
-<!-- Efek Dekorasi -->
+<!-- Decoration Effects -->
 <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-200/20 blur-[100px] pointer-events-none"></div>
 <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-200/20 blur-[100px] pointer-events-none"></div>
 
-<!-- Header Kalender -->
+<!-- Calendar Header -->
 <div class="flex items-center justify-between px-8 py-6 border-b border-slate-200 bg-white/60 backdrop-blur-xl relative z-[3]">
     <div class="flex items-center gap-4">
         <button @click="goToToday()" class="px-5 py-2 bg-white border border-slate-200 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm">
-            Hari Ini
+            Today
         </button>
 
         <div class="relative" @click.outside="openMonth = false">
@@ -582,18 +564,18 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
     
     <div class="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-indigo-100 shadow-sm">
         <i class="fa-solid fa-circle-info"></i>
-        Arahkan kursor ke tanggal untuk menambah rencana
+        Hover over a date to add a plan or note
     </div>
 </div>
 
-<!-- Header Nama Hari -->
+<!-- Days Name Header -->
 <div class="grid grid-cols-7 border-b-2 border-slate-200 bg-slate-50/80 relative z-[2] text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">
-    <template x-for="dayName in ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']">
+    <template x-for="dayName in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">
         <div class="py-4 text-center border-r border-slate-200" x-text="dayName"></div>
     </template>
 </div>
 
-<!-- Grid Kalender Dinamis -->
+<!-- Dynamic Calendar Grid -->
 <div class="flex-1 grid grid-cols-7 bg-transparent relative z-[1]">
     <template x-for="(day, index) in days" :key="index">
         <div 
@@ -608,7 +590,7 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
                 ></span>
             </div>
 
-            <!-- Kontainer Kartu -->
+            <!-- Card Container -->
             <div class="flex-1 pb-10 space-y-1.5 flex flex-col pt-1">
                 
                 <!-- RENDER PLANNING -->
@@ -664,11 +646,11 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
                 </template>
             </div>
 
-            <!-- TOMBOL BUAT PLANNING / NOTES -->
+            <!-- CREATE BUTTON -->
             <button 
                 @click.stop="openCreate(day.date)"
                 class="absolute bottom-3 right-3 w-8 h-8 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200 flex items-center justify-center hover:bg-indigo-700 hover:scale-110 active:scale-95 transition-all opacity-0 group-hover:opacity-100 z-20"
-                title="Tambah Rencana / Catatan di Tanggal Ini"
+                title="Add plan or note on this date"
             >
                 <i class="fa-solid fa-plus text-xs"></i>
             </button>
@@ -676,14 +658,14 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
     </template>
 </div>
 
-<!-- Modal Panggil -->
+<!-- Modals -->
 @include('boardplanning.lihatplanning')
 @include('boardplanning.editplanning')
 @include('calendernotes.createnotes')
 @include('calendernotes.partials.lihatnotes')
 @include('calendernotes.editnotes')
 
-<!-- Modal Buat Planning -->
+<!-- Modal Create Choice -->
 <div
     x-show="showCreateModal"
     x-cloak
@@ -706,8 +688,8 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
                     <i class="fa-solid fa-file-circle-plus"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Buat Perencanaan Baru</h3>
-                    <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Tentukan detail konten untuk tanggal <span class="text-indigo-600 font-black" x-text="planning.start_date"></span></p>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Create New Planning</h3>
+                    <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Set content details for date <span class="text-indigo-600 font-black" x-text="planning.start_date"></span></p>
                 </div>
             </div>
             <button @click="showCreateModal = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400">
@@ -716,12 +698,12 @@ class="min-h-[calc(100vh-120px)] h-auto flex flex-col bg-[#fcfdfe] rounded-[2.5r
         </div>
 
         <div class="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar text-slate-800 text-sm">
-            <p class="text-center italic text-slate-400">Formulir pembuatan rencana bisa Anda tautkan ke modal Create utama di sini.</p>
+            <p class="text-center italic text-slate-400">You can link the planning creation form to the main Create modal here.</p>
         </div>
 
         <div class="px-8 py-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-4">
-            <button @click="showCreateModal = false" class="px-8 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-all">Batal</button>
-            <button @click="showCreateModal = false; console.log('Create:', planning);" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all">Buat Perencanaan</button>
+            <button @click="showCreateModal = false" class="px-8 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-all">Cancel</button>
+            <button @click="showCreateModal = false; console.log('Create:', planning);" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all">Create Planning</button>
         </div>
     </div>
 </div>

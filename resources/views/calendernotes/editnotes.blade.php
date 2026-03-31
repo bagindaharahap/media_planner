@@ -1,4 +1,4 @@
-<!-- Modal Edit Note (Komponen Partial) -->
+<!-- Modal Edit Note (Partial Component) -->
 <div
     x-show="showEditNoteModal"
     x-cloak
@@ -24,8 +24,8 @@
                     <i class="fa-solid fa-pen-to-square"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Perbarui Catatan</h3>
-                    <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Edit ide atau memo Anda</p>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Update Note</h3>
+                    <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Edit your ideas or memos</p>
                 </div>
             </div>
             <button @click="showEditNoteModal = false" class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
@@ -33,28 +33,27 @@
             </button>
         </div>
 
-        <!-- Form Edit -->
+        <!-- Edit Form -->
         <div class="p-8 space-y-6">
             <div class="space-y-2">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Judul Catatan</label>
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Note Title</label>
                 <input type="text" x-model="editingNote.title" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
             </div>
 
             <div class="space-y-2">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Isi Catatan</label>
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Note Content</label>
                 <textarea x-model="editingNote.content" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none"></textarea>
             </div>
 
             <div class="space-y-2">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1 block text-center mb-2">Ganti Warna Kategori</label>
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1 block text-center mb-2">Change Category Color</label>
                 <div class="flex justify-center gap-3">
                     <template x-for="color in ['bg-indigo-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-purple-500']" :key="color">
                         <button 
                             type="button"
                             @click="editingNote.color = color" 
-                            :class="color" 
                             class="w-8 h-8 rounded-full border-4 transition-all" 
-                            :class="editingNote.color === color ? 'border-slate-200 scale-110 shadow-lg' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-110'"
+                            :class="[color, editingNote.color === color ? 'border-slate-200 scale-110 shadow-lg' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-110']"
                         ></button>
                     </template>
                 </div>
@@ -63,8 +62,8 @@
 
         <!-- Footer -->
         <div class="pt-6 border-t border-slate-100 flex gap-3 px-8 pb-6">
-            <button type="button" @click="showEditNoteModal = false; showLihatNoteModal = true" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 rounded-2xl transition-all border border-slate-100">Batal</button>
-            <button type="button" @click="updateNote()" class="flex-[2] bg-indigo-600 text-white py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 transform active:scale-95 transition-all">Simpan Perubahan</button>
+            <button type="button" @click="showEditNoteModal = false; showLihatNoteModal = true" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 rounded-2xl transition-all border border-slate-100">Cancel</button>
+            <button type="button" @click="updateNote()" class="flex-[2] bg-indigo-600 text-white py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 transform active:scale-95 transition-all">Save Changes</button>
         </div>
     </div>
 </div>

@@ -1,3 +1,4 @@
+<!-- Log Detail Modal (Partial Component) -->
 <div 
     x-data="logDetailModal()"
     x-on:show-log-detail.window="open($event.detail)"
@@ -25,8 +26,8 @@
                     <i class="fa-solid fa-code-compare"></i>
                 </div>
                 <div>
-                    <h2 class="text-lg font-black text-slate-800">Detail Perubahan</h2>
-                    <p class="text-xs text-slate-500 font-medium" x-text="meta.activity || 'Log aktivitas'"></p>
+                    <h2 class="text-lg font-black text-slate-800">Change Details</h2>
+                    <p class="text-xs text-slate-500 font-medium" x-text="meta.activity || 'Activity log'"></p>
                 </div>
             </div>
             <button @click="close()" class="w-9 h-9 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors">
@@ -45,10 +46,10 @@
         <!-- BODY -->
         <div class="flex-1 overflow-y-auto p-8 max-h-[60vh]">
 
-            <!-- Jika action = create: hanya tampilkan After -->
+            <!-- If action = create: only show After -->
             <template x-if="meta.action === 'create'">
                 <div>
-                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Data yang Dibuat</p>
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Data Created</p>
                     <div class="space-y-2">
                         <template x-for="item in diffs" :key="item.key">
                             <div class="flex items-start gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
@@ -60,10 +61,10 @@
                 </div>
             </template>
 
-            <!-- Jika action = delete: hanya tampilkan Before -->
+            <!-- If action = delete: only show Before -->
             <template x-if="meta.action === 'delete'">
                 <div>
-                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Data yang Dihapus</p>
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Data Deleted</p>
                     <div class="space-y-2">
                         <template x-for="item in diffs" :key="item.key">
                             <div class="flex items-start gap-3 p-3 bg-rose-50 border border-rose-100 rounded-xl">
@@ -75,14 +76,14 @@
                 </div>
             </template>
 
-            <!-- Jika action = update: tampilkan Before vs After dengan highlighting -->
+            <!-- If action = update: show Before vs After with highlighting -->
             <template x-if="meta.action === 'update'">
                 <div>
                     <!-- Legend -->
                     <div class="flex items-center gap-4 mb-4">
-                        <span class="flex items-center gap-1.5 text-xs font-bold text-rose-500"><span class="w-3 h-3 rounded bg-rose-200 inline-block"></span> Data Lama</span>
-                        <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600"><span class="w-3 h-3 rounded bg-emerald-200 inline-block"></span> Data Baru</span>
-                        <span class="flex items-center gap-1.5 text-xs font-bold text-amber-600"><span class="w-3 h-3 rounded bg-amber-200 inline-block"></span> Teks yang Berubah</span>
+                        <span class="flex items-center gap-1.5 text-xs font-bold text-rose-500"><span class="w-3 h-3 rounded bg-rose-200 inline-block"></span> Old Data</span>
+                        <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600"><span class="w-3 h-3 rounded bg-emerald-200 inline-block"></span> New Data</span>
+                        <span class="flex items-center gap-1.5 text-xs font-bold text-amber-600"><span class="w-3 h-3 rounded bg-amber-200 inline-block"></span> Changed Text</span>
                     </div>
 
                     <div class="space-y-3">
@@ -95,12 +96,12 @@
                                 <div class="grid grid-cols-2 divide-x divide-slate-200">
                                     <!-- BEFORE -->
                                     <div class="p-4 bg-rose-50/40">
-                                        <p class="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-2">Sebelum</p>
+                                        <p class="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-2">Before</p>
                                         <p class="text-sm leading-relaxed" x-html="highlightDiff(String(item.before ?? ''), String(item.after ?? ''), 'before')"></p>
                                     </div>
                                     <!-- AFTER -->
                                     <div class="p-4 bg-emerald-50/40">
-                                        <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Sesudah</p>
+                                        <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">After</p>
                                         <p class="text-sm leading-relaxed" x-html="highlightDiff(String(item.before ?? ''), String(item.after ?? ''), 'after')"></p>
                                     </div>
                                 </div>
@@ -108,20 +109,20 @@
                         </template>
                     </div>
 
-                    <!-- Empty state jika tidak ada perubahan -->
+                    <!-- Empty state if no changes -->
                     <div x-show="diffs.length === 0" class="text-center py-10 text-slate-400">
                         <i class="fa-solid fa-check-circle text-3xl text-emerald-400 mb-2"></i>
-                        <p class="font-semibold">Tidak ada perubahan data yang terdeteksi.</p>
+                        <p class="font-semibold">No data changes detected.</p>
                     </div>
                 </div>
             </template>
 
-            <!-- Jika action lain (login/logout): tampilkan info sederhana -->
+            <!-- If other actions (login/logout): show simple info -->
             <template x-if="meta.action !== 'create' && meta.action !== 'delete' && meta.action !== 'update'">
                 <div class="text-center py-10 text-slate-400">
                     <i class="fa-solid fa-circle-info text-3xl text-indigo-300 mb-3"></i>
                     <p class="font-semibold text-slate-500" x-text="meta.activity"></p>
-                    <p class="text-xs mt-1">Aktivitas ini tidak memiliki perubahan data.</p>
+                    <p class="text-xs mt-1">This activity has no associated data changes.</p>
                 </div>
             </template>
         </div>
@@ -129,7 +130,7 @@
         <!-- FOOTER -->
         <div class="px-8 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end">
             <button @click="close()" class="px-6 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold text-sm rounded-xl transition-all">
-                Tutup
+                Close
             </button>
         </div>
     </div>
@@ -156,7 +157,7 @@ function logDetailModal() {
             const after  = data.after  || {};
             const action = data.action || '';
 
-            // Field yang tidak perlu ditampilkan
+            // Fields to exclude from display
             const skip = ['id', 'user_id', 'updated_at', 'created_at', 'remember_token'];
 
             if (action === 'create') {
