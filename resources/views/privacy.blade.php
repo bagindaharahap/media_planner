@@ -36,7 +36,7 @@
                 <i class="fa-solid fa-shield"></i>
             </div>
             <h1 class="text-3xl md:text-4xl font-black text-slate-900 mb-3 tracking-tight">Kebijakan Privasi (Privacy Policy)</h1>
-            <p class="text-slate-500 font-medium text-sm">Terakhir Diperbarui / Last Updated: <span class="text-slate-700 font-bold">30 Maret 2026</span></p>
+            <p class="text-slate-500 font-medium text-sm">Terakhir Diperbarui / Last Updated: <span class="text-slate-700 font-bold">31 Maret 2026</span></p>
         </div>
 
         <!-- Konten Privasi Bilingual -->
@@ -63,11 +63,28 @@
                 </ul>
             </div>
 
-            <!-- Bagian 2 -->
+            <!-- Bagian 2 (REFIMED) -->
             <div>
-                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-down text-indigo-500"></i> 2. Penggunaan Data API (API Data Usage)</h2>
-                <p class="mb-4"><strong>[ID]</strong> Sistem mematuhi kebijakan pengembang dari platform TikTok dan Meta demi keamanan aset digital perusahaan. Sistem hanya menggunakan token untuk menjalankan fungsi otomatisasi posting dan merekap data statistik audiens. Tidak ada informasi pribadi yang ditarik secara ilegal.</p>
-                <p class="text-slate-500 italic"><strong>[EN]</strong> The system complies with the developer policies of the TikTok and Meta platforms for the security of the company's digital assets. The system only uses tokens to execute automated posting functions and recap audience statistical data. No personal information is extracted illegally.</p>
+                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-down text-indigo-500"></i> 2. Manajemen Data Pihak Ketiga (TikTok & Meta) / Third-Party Data Management</h2>
+                
+                <p class="mb-4 font-semibold text-slate-700 underline">A. Cara Kami Mengelola & Menyimpan Data / How We Manage & Store Data:</p>
+                <p class="mb-2"><strong>[ID]</strong> Kami hanya mengumpulkan data yang diperlukan melalui integrasi API TikTok dan Meta untuk fungsionalitas utama (posting otomatis dan monitoring performa). Semua <em>OAuth Tokens</em> disimpan secara terenkripsi menggunakan standar <strong>AES-256</strong> dalam database kami. Kami tidak pernah membagikan atau menjual data akses ini kepada pihak ketiga mana pun.</p>
+                <p class="text-slate-500 italic mb-4"><strong>[EN]</strong> We only collect the data necessary via TikTok and Meta API integrations for core functionalities (automated posting and performance monitoring). All <em>OAuth Tokens</em> are stored encrypted using <strong>AES-256</strong> standards within our database. We never share or sell this access data to any third parties.</p>
+
+                <p class="mb-4 font-semibold text-slate-700 underline">B. Prosedur Penghapusan Data / Data Deletion Procedure:</p>
+                <p class="mb-2"><strong>[ID]</strong> Kami sangat menghormati hak privasi Anda dan kepatuhan platform. Pengguna dapat menghapus semua data terkait API yang tersimpan di sistem kami kapan saja melalui langkah berikut:</p>
+                <ul class="list-disc list-outside pl-5 space-y-2 mb-4">
+                    <li><strong>Melalui Dashboard:</strong> Navigasi ke menu "Social Accounts" dan klik tombol "Disconnect/Remove Account". Hal ini akan menghapus token akses dari database kami secara permanen.</li>
+                    <li><strong>Melalui Pengaturan Platform:</strong> Anda dapat mencabut akses aplikasi "Content Planner" langsung melalui pengaturan keamanan akun TikTok atau Meta Anda (App Permissions).</li>
+                    <li><strong>Permintaan Email:</strong> Kirim permintaan penghapusan data secara manual ke tim IT kami melalui email: <span class="text-indigo-600 font-bold">ikhtiarberkah1010@gmail.com</span>. Permintaan akan diproses dalam 1x24 jam.</li>
+                </ul>
+
+                <p class="text-slate-500 italic mb-2"><strong>[EN]</strong> We highly respect your privacy rights and platform compliance. Users can delete all API-related data stored in our system at any time through the following steps:</p>
+                <ul class="list-disc list-outside pl-5 space-y-2 text-slate-500 italic">
+                    <li><strong>Via Dashboard:</strong> Navigate to the "Social Accounts" menu and click the "Disconnect/Remove Account" button. This will permanently purge the access token from our database.</li>
+                    <li><strong>Via Platform Settings:</strong> You can revoke access for the "Content Planner" app directly through the security settings of your TikTok or Meta account (App Permissions).</li>
+                    <li><strong>Email Request:</strong> Submit a manual data deletion request to our IT team at: <span class="text-indigo-600 font-bold">ikhtiarberkah1010@gmail.com</span>. Requests will be processed within 24 hours.</li>
+                </ul>
             </div>
 
             <!-- Bagian 3 -->

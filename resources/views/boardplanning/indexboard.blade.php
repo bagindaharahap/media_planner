@@ -4,12 +4,12 @@
 
 @section('content')
 
-<!-- Storing Laravel data into a script tag to prevent quote escaping issues in HTML attributes -->
+<!-- Menyimpan data Laravel ke dalam tag script untuk mencegah masalah escaping tanda kutip -->
 <script id="plannings-data" type="application/json">
     {!! json_encode($plannings ?? []) !!}
 </script>
 
-<!-- Main wrapper with Alpine.js for global state management -->
+<!-- Wrapper utama dengan Alpine.js untuk manajemen state global -->
 <div 
     x-data="{ 
         userRole: '{{ Auth::user()->role ?? 'Content Planner' }}',
@@ -40,12 +40,6 @@
         ],
 
         tasks: [],
-
-        // --- FALLBACK VARIABLES FOR SORTABLE.JS ---
-        task: { assigned: [] }, 
-        assignee: {},
-        idx: 0,
-        // --------------------------------------------
 
         planning: {
             status: 'backlog', title: '', content_type: 'TikTok', description: '',
@@ -290,7 +284,7 @@
                     
                     if (task && task.status !== newStatus) {
                         
-                        // 1. MEDIA LINK VALIDATION (Admin & Content Planner)
+                        // 1. MEDIA LINK VALIDATION
                         const requiresMediaStatuses = ['review', 'revisi', 'hold_on', 'approved', 'published'];
                         if (requiresMediaStatuses.includes(newStatus) && (!task.media_link || task.media_link.trim() === '')) {
                             this.taskNeedsMedia = task;
@@ -299,7 +293,7 @@
                             return; 
                         }
 
-                        // 2. ROLE ACCESS VALIDATION (Non-Admins)
+                        // 2. ROLE ACCESS VALIDATION
                         if (this.userRole !== 'Admin') {
                             const forbiddenDestinations = ['hold_on', 'approved'];
                             if (forbiddenDestinations.includes(newStatus)) {
@@ -309,7 +303,7 @@
                             }
                         }
 
-                        // 3. PUBLISH VALIDATION (Drive Archive Confirmation)
+                        // 3. PUBLISH VALIDATION
                         if (newStatus === 'published') {
                             this.taskToPublish = task;
                             this.showPublishConfirmModal = true;
@@ -382,6 +376,21 @@
                         >
                             <!-- Action Buttons -->
                             <div class="flex items-center gap-2 absolute top-4 right-4 z-10">
+                                <!-- TIKTOK DEMO BUTTON -->
+                                <button 
+                                    type="button" 
+                                    @click.stop="window.dispatchEvent(new CustomEvent('open-tiktok-post', { 
+                                        detail: { 
+                                            title: task.title + ' #contentplanner', 
+                                            videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' 
+                                        } 
+                                    }))"
+                                    class="text-slate-300 hover:text-slate-900 transition-colors"
+                                    title="Simulasi Post TikTok"
+                                >
+                                    <i class="fa-brands fa-tiktok text-xs"></i>
+                                </button>
+                                
                                 <button type="button" @click.stop="openEdit(task)" class="text-slate-300 hover:text-indigo-600 transition-colors"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
                                 <button type="button" @click.stop="confirmDelete(task.id)" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fa-solid fa-trash text-xs"></i></button>
                                 <input type="checkbox" @click.stop :value="task.id" x-model="selectedTasks" class="task-checkbox w-4 h-4 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
@@ -510,8 +519,8 @@
             <h3 class="text-2xl font-bold text-slate-800 mb-2">Archive Confirmation</h3>
             <p class="text-slate-500 text-sm leading-relaxed mb-8 px-4">Before publishing, has this content been uploaded to Google Drive as an archive?</p>
             <div class="flex gap-4">
-                <button type="button" @click="showPublishConfirmModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100">Not yet</button>
-                <button type="button" @click="executeMoveTask(taskToPublish, 'published'); showPublishConfirmModal = false" class="flex-[1.5] px-6 py-3.5 bg-emerald-50 text-white rounded-2xl font-bold shadow-xl shadow-emerald-100 hover:bg-emerald-600 transform active:scale-95 transition-all">
+                <button type="button" @click="showPublishConfirmModal = false" class="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 border border-slate-100 font-bold transition-all active:scale-95">Not yet</button>
+                <button type="button" @click="executeMoveTask(taskToPublish, 'published'); showPublishConfirmModal = false" class="flex-[1.5] px-6 py-3.5 bg-emerald-600 text-white rounded-2xl font-bold shadow-xl shadow-emerald-200 hover:bg-emerald-700 transform active:scale-95 transition-all">
                     Yes, Publish
                 </button>
             </div>
@@ -521,6 +530,9 @@
     @include('boardplanning.createplanning')
     @include('boardplanning.editplanning')
     @include('boardplanning.lihatplanning')
+    
+    <!-- INCLUDE TIKTOK POST MODAL HERE -->
+    @include('akun.tiktokpostmodal')
 </div>
 
 @endsection

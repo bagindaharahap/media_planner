@@ -31,7 +31,24 @@
                     <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Content Planning Details</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            
+            <div class="flex items-center gap-3">
+                <!-- TIKTOK SIMULATION BUTTON (Crucial for Demo) -->
+                <button 
+                    type="button"
+                    @click="window.dispatchEvent(new CustomEvent('open-tiktok-post', { 
+                        detail: { 
+                            title: viewingPlanning.title, 
+                            videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' 
+                        } 
+                    }))"
+                    class="px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-indigo-600 transition-all shadow-md active:scale-95"
+                >
+                    <i class="fa-brands fa-tiktok"></i> Simulate TikTok Post
+                </button>
+
+                <div class="h-8 w-px bg-slate-200 mx-1"></div>
+
                 <button @click="showLihatModal = false; openEdit(viewingPlanning)" class="w-10 h-10 rounded-full hover:bg-indigo-50 flex items-center justify-center text-indigo-600 transition-colors" title="Edit Plan">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
@@ -101,7 +118,7 @@
                 </div>
             </div>
 
-            <!-- Team -->
+            <!-- Responsible Team -->
             <div class="space-y-4">
                 <div class="flex items-center gap-2 px-1">
                     <i class="fa-solid fa-users text-indigo-500 text-xs"></i>
@@ -141,7 +158,7 @@
                         </a>
                     </template>
                     <template x-if="!viewingPlanning.references || viewingPlanning.references.filter(r => r).length === 0">
-                        <p class="text-[10px] text-slate-400 italic text-center py-4">No reference links.</p>
+                        <p class="text-[10px] text-slate-400 italic text-center py-4">No reference links available.</p>
                     </template>
                 </div>
             </div>
@@ -195,7 +212,6 @@
                             <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Revision Notes / Feedback</h4>
                         </div>
                         <div class="bg-rose-50/30 border border-rose-100 rounded-[2rem] p-8 shadow-sm relative min-h-[160px]">
-                            <!-- Feedback Icon Decoration -->
                             <i class="fa-solid fa-comment-dots absolute top-6 right-8 text-rose-200 text-3xl opacity-20"></i>
                             
                             <div class="relative z-10">
@@ -205,7 +221,7 @@
                             <template x-if="viewingPlanning.status === 'revisi'">
                                 <div class="mt-6 flex items-center gap-2 px-3 py-2 bg-rose-100/50 rounded-xl border border-rose-200 w-fit">
                                     <i class="fa-solid fa-circle-exclamation text-rose-500 text-[10px]"></i>
-                                    <span class="text-[10px] font-black text-rose-600 uppercase tracking-tighter">Currently in Revision</span>
+                                    <span class="text-[10px] font-black text-rose-600 uppercase tracking-tighter">Currently in Revision Stage</span>
                                 </div>
                             </template>
                         </div>

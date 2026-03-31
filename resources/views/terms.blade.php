@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syarat dan Ketentuan - Content Planner</title>
+    <title>Terms and Conditions - Content Planner</title>
     
     <!-- Favicon -->
     <link rel="icon" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
@@ -19,13 +19,13 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen p-4 md:p-10 relative overflow-x-hidden">
 
-    <!-- Dekorasi Background -->
+    <!-- Decoration Background -->
     <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-pink-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
     <div class="max-w-4xl mx-auto bg-white rounded-[2.5rem] shadow-xl border border-slate-100 p-8 md:p-14 relative z-10">
         
-        <!-- Tombol Kembali -->
+        <!-- Back Button -->
         <a href="{{ route('login') }}" class="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-xl hover:bg-indigo-100 transition-colors mb-8">
             <i class="fa-solid fa-arrow-left"></i> Kembali / Back
         </a>
@@ -36,103 +36,82 @@
                 <i class="fa-solid fa-file-contract"></i>
             </div>
             <h1 class="text-3xl md:text-4xl font-black text-slate-900 mb-3 tracking-tight">Syarat dan Ketentuan (Terms and Conditions)</h1>
-            <p class="text-slate-500 font-medium text-sm">Terakhir Diperbarui / Last Updated: <span class="text-slate-700 font-bold">30 Maret 2026</span></p>
+            <p class="text-slate-500 font-medium text-sm">Terakhir Diperbarui / Last Updated: <span class="text-slate-700 font-bold">31 Maret 2026</span></p>
         </div>
 
-        <!-- Konten Utama (Disatukan langsung di sini dengan space-y-10 agar jaraknya rapi) -->
+        <!-- Main Content -->
         <div class="space-y-10 text-slate-600 leading-relaxed text-sm md:text-base">
             
-            <!-- Pengantar -->
+            <!-- Introduction -->
             <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                <p class="mb-4"><strong>[ID]</strong> Selamat datang di sistem internal <strong>Content Planner</strong>. Dengan mengakses dan menggunakan platform ini, Anda sebagai karyawan atau anggota tim dianggap telah membaca, memahami, dan menyetujui pedoman penggunaan internal perusahaan berikut.</p>
-                <p class="text-slate-500 italic"><strong>[EN]</strong> Welcome to the <strong>Content Planner</strong> internal system. By accessing and using this platform, you as an employee or team member are deemed to have read, understood, and agreed to the following internal company usage guidelines.</p>
+                <p class="mb-4"><strong>[ID]</strong> Platform <strong>Content Planner</strong> adalah sistem manajemen operasional tertutup yang dirancang secara eksklusif untuk penggunaan internal perusahaan. Dengan mengakses platform ini, Anda menyetujui pedoman penggunaan aset digital perusahaan dan kepatuhan terhadap platform pihak ketiga.</p>
+                <p class="text-slate-500 italic"><strong>[EN]</strong> The <strong>Content Planner</strong> platform is a closed operational management system designed exclusively for internal company use. By accessing this platform, you agree to the company's digital asset usage guidelines and third-party platform compliance.</p>
             </div>
 
-            <!-- Bagian 1 -->
+            <!-- Section 1 -->
             <div>
-                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-layer-group text-indigo-500"></i> 1. Deskripsi Layanan / Service Description</h2>
-                <p class="mb-2"><strong>[ID]</strong> Sistem ini adalah platform produktivitas internal yang dirancang untuk mendukung operasional divisi Content dan Digital Marketing perusahaan melalui fitur:</p>
+                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-layer-group text-indigo-500"></i> 1. Lingkup Penggunaan / Scope of Use</h2>
+                <p class="mb-2"><strong>[ID]</strong> Sistem ini dikategorikan sebagai <strong>Alamat Manajemen Bisnis Internal</strong>. Penggunaannya terbatas pada karyawan resmi untuk:</p>
                 <ul class="list-disc list-outside pl-5 space-y-2 mb-4">
-                    <li><strong class="text-slate-700">Board Planning:</strong> Pengaturan jadwal, kolaborasi tim, dan visualisasi aset konten perusahaan.</li>
-                    <li><strong class="text-slate-700">Prompt Notes:</strong> Penyimpanan instruksi AI standar operasi (SOP) untuk kreasi konten.</li>
-                    <li><strong class="text-slate-700">Calendar & Notes:</strong> Kalender editorial, integrasi jadwal kerja, dan catatan harian.</li>
+                    <li>Pengelolaan jadwal konten resmi perusahaan di platform sosial.</li>
+                    <li>Monitoring metrik performa publik dari akun bisnis perusahaan melalui API resmi.</li>
+                    <li>Kolaborasi internal antar tim kreatif dan administrator.</li>
                 </ul>
 
-                <p class="text-slate-500 italic mb-2"><strong>[EN]</strong> This system is an internal productivity platform designed to support the operations of the company's Content and Digital Marketing division through features:</p>
+                <p class="text-slate-500 italic mb-2"><strong>[EN]</strong> This system is categorized as an <strong>Internal Business Management Tool</strong>. Its use is restricted to authorized employees for:</p>
                 <ul class="list-disc list-outside pl-5 space-y-2 text-slate-500 italic">
-                    <li><strong>Board Planning:</strong> Schedule management, team collaboration, and visualization of company content assets.</li>
-                    <li><strong>Prompt Notes:</strong> Storage of standard operating AI instructions (SOP) for content creation.</li>
-                    <li><strong>Calendar & Notes:</strong> Editorial calendar, work schedule integration, and daily notes.</li>
+                    <li>Managing official company content schedules on social platforms.</li>
+                    <li>Monitoring public performance metrics of company business accounts via official APIs.</li>
+                    <li>Internal collaboration between creative teams and administrators.</li>
                 </ul>
             </div>
 
-            <!-- Bagian 2 -->
+            <!-- Section 2 -->
             <div>
-                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-user-shield text-indigo-500"></i> 2. Akses dan Penggunaan Akun / Account Access and Usage</h2>
+                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-user-shield text-indigo-500"></i> 2. Keamanan Akses Terpusat / Centralized Access Security</h2>
                 <ul class="list-disc list-outside pl-5 space-y-4">
                     <li>
-                        <strong class="text-slate-700">[ID]</strong> Akun akses dibuat dan diberikan secara eksklusif oleh pihak Administrator atau Tim IT Perusahaan. Anda diwajibkan untuk menjaga kerahasiaan data login Anda dan <strong>dilarang keras membagikan akses</strong> kepada pihak eksternal. Hak akses ke sistem ini akan ditutup atau dicabut saat Anda tidak lagi bertugas di divisi terkait atau telah berhenti menjadi karyawan perusahaan.<br>
-                        <span class="text-slate-500 italic mt-1 block"><strong>[EN]</strong> Access accounts are created and granted exclusively by the Administrator or the Company's IT Team. You are required to maintain the confidentiality of your login data and are <strong>strictly prohibited from sharing access</strong> with external parties. Access rights to this system will be suspended or revoked when you are no longer assigned to the relevant division or have ceased to be an employee of the company.</span>
+                        <strong class="text-slate-700">[ID]</strong> Untuk menjamin keamanan data korporasi, registrasi akun hanya dapat dilakukan melalui Administrator sistem. Kebijakan "Hubungi Admin" adalah protokol keamanan standar kami untuk mencegah akses tidak sah dari pihak luar perusahaan.<br>
+                        <span class="text-slate-500 italic mt-1 block"><strong>[EN]</strong> To ensure corporate data security, account registration can only be performed by the system Administrator. The "Contact Admin" policy is our standard security protocol to prevent unauthorized access from parties outside the company.</span>
                     </li>
                 </ul>
             </div>
 
-            <!-- Bagian 3 -->
+            <!-- Section 3 -->
             <div>
-                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-plug-circle-check text-indigo-500"></i> 3. Integrasi API (TikTok & Facebook) / API Integration</h2>
-                <p class="mb-2"><strong>[ID]</strong> Guna mempercepat proses publikasi dan penarikan data analisis aset digital perusahaan, sistem ini terhubung dengan API resmi dari TikTok (TikTok for Developers) dan Meta (Facebook for Developers). Oleh karena itu:</p>
-                <ul class="list-disc list-outside pl-5 space-y-2 mb-4">
-                    <li>Pemberian akses <em>OAuth token</em> hanya boleh dilakukan menggunakan akun media sosial resmi milik perusahaan atau entitas yang dinaunginya.</li>
-                    <li>Penggunaan fungsi dari integrasi ini sepenuhnya tunduk pada Kebijakan Pengembang (Developer Policies) dan Syarat Layanan masing-masing platform (Meta & TikTok).</li>
-                    <li>Token akses dijaga oleh sistem internal kami, namun Anda bertanggung jawab untuk tidak melakukan aktivitas spam atau pelanggaran komunitas yang bisa membahayakan reputasi akun sosial media perusahaan.</li>
+                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-plug-circle-check text-indigo-500"></i> 3. Kepatuhan Platform Pihak Ketiga / Third-Party Platform Compliance</h2>
+                <p class="mb-2"><strong>[ID]</strong> Integrasi API TikTok dan Meta digunakan sesuai dengan kebijakan penggunaan komersial internal:</p>
+                <ul class="list-disc list-outside pl-5 space-y-2 mb-4 font-medium text-slate-700">
+                    <li><strong>TikTok Terms:</strong> Kami mematuhi <a href="https://www.tiktok.com/legal/page/global/terms-of-service/en" class="text-indigo-600 underline">TikTok Terms of Service</a> dan Kebijakan Pengembang untuk tujuan manajemen akun bisnis.</li>
+                    <li><strong>Meta Terms:</strong> Kami mematuhi <a href="https://developers.facebook.com/terms/" class="text-indigo-600 underline">Meta Platform Policy</a> dalam pengelolaan akun Instagram Bisnis.</li>
                 </ul>
 
-                <p class="text-slate-500 italic mb-2"><strong>[EN]</strong> To accelerate the publication process and data retrieval of the company's digital assets, this system connects with official APIs from TikTok (TikTok for Developers) and Meta (Facebook for Developers). Therefore:</p>
+                <p class="text-slate-500 italic mb-2"><strong>[EN]</strong> TikTok and Meta API integrations are used in accordance with internal commercial usage policies:</p>
                 <ul class="list-disc list-outside pl-5 space-y-2 text-slate-500 italic">
-                    <li>Granting <em>OAuth token</em> access must only be done using official social media accounts belonging to the company or its affiliated entities.</li>
-                    <li>The use of functions from this integration is fully subject to the Developer Policies and Terms of Service of each platform (Meta & TikTok).</li>
-                    <li>Access tokens are secured by our internal system, but you are responsible for not engaging in spam activities or community violations that could endanger the reputation of the company's social media accounts.</li>
+                    <li><strong>TikTok Terms:</strong> We comply with <a href="https://www.tiktok.com/legal/page/global/terms-of-service/en" class="underline">TikTok Terms of Service</a> and Developer Policies for business account management purposes.</li>
+                    <li><strong>Meta Terms:</strong> We comply with the <a href="https://developers.facebook.com/terms/" class="underline">Meta Platform Policy</a> regarding the management of Instagram Business accounts.</li>
                 </ul>
             </div>
 
-            <!-- Bagian 4 -->
+            <!-- Section 4 -->
             <div>
-                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-file-shield text-indigo-500"></i> 4. Kepemilikan Data & Kerahasiaan / Data Ownership & Confidentiality</h2>
-                <ul class="list-disc list-outside pl-5 space-y-4">
-                    <li>
-                        <strong class="text-slate-700">[ID] Hak Milik Perusahaan:</strong> Segala bentuk data, draf konten, jadwal promosi, strategi pemasaran, dan template prompt yang dimasukkan atau dihasilkan di dalam platform ini adalah kekayaan intelektual (IP) milik perusahaan secara eksklusif.<br>
-                        <span class="text-slate-500 italic mt-1 block"><strong>[EN] Company Ownership:</strong> All forms of data, content drafts, promotional schedules, marketing strategies, and prompt templates entered or generated within this platform are the exclusive intellectual property (IP) of the company.</span>
-                    </li>
-                    <li>
-                        <strong class="text-slate-700">[ID] Kerahasiaan (NDA):</strong> Anda tidak diperkenankan mengunduh, menyebarkan, atau membocorkan data perencanaan operasional apa pun yang terdapat di platform ini kepada kompetitor, media luar, atau pihak lain di luar perusahaan.<br>
-                        <span class="text-slate-500 italic mt-1 block"><strong>[EN] Confidentiality (NDA):</strong> You are not permitted to download, distribute, or leak any operational planning data contained in this platform to competitors, external media, or other parties outside the company.</span>
-                    </li>
-                </ul>
+                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-database text-indigo-500"></i> 4. Perlindungan Data Korporasi / Corporate Data Protection</h2>
+                <p class="mb-2"><strong>[ID]</strong> Seluruh <em>access token</em> yang diperoleh melalui proses OAuth disimpan secara terenkripsi (AES-256) dan hanya digunakan untuk keperluan internal divisi pemasaran perusahaan.</p>
+                <p class="text-slate-500 italic"><strong>[EN]</strong> All <em>access tokens</em> obtained via the OAuth process are stored encrypted (AES-256) and used solely for the internal needs of the company's marketing division.</p>
             </div>
 
-            <!-- Bagian 5 -->
+            <!-- Section 5 -->
             <div>
-                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-gavel text-indigo-500"></i> 5. Sanksi Pelanggaran / Violation Sanctions</h2>
-                <p class="mb-2"><strong>[ID]</strong> Sistem ini memantau aktivitas pengguna melalui riwayat log (activity logging). Setiap bentuk penyalahgunaan sistem, pembocoran data, atau penggunaan fitur yang merugikan perusahaan dapat mengakibatkan:</p>
-                <ul class="list-disc list-outside pl-5 space-y-2 mb-4">
-                    <li>Pemblokiran akun secara langsung.</li>
-                    <li>Pemberian sanksi indisipliner sesuai dengan peraturan dan kebijakan (SOP) HR perusahaan.</li>
-                    <li>Tindakan hukum lebih lanjut jika pelanggaran berdampak material pada perusahaan.</li>
-                </ul>
-
-                <p class="text-slate-500 italic mb-2"><strong>[EN]</strong> This system monitors user activity through activity logging. Any form of system abuse, data leakage, or use of features detrimental to the company may result in:</p>
-                <ul class="list-disc list-outside pl-5 space-y-2 text-slate-500 italic">
-                    <li>Immediate account suspension.</li>
-                    <li>Disciplinary sanctions in accordance with the company's HR regulations and policies (SOP).</li>
-                    <li>Further legal action if the violation has a material impact on the company.</li>
-                </ul>
+                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-gavel text-indigo-500"></i> 5. Sanksi & Kebijakan Internal / Sanctions & Internal Policy</h2>
+                <p class="mb-2"><strong>[ID]</strong> Pelanggaran terhadap kerahasiaan data atau penyalahgunaan fitur API yang merugikan perusahaan akan ditindaklanjuti sesuai dengan SOP ketenagakerjaan perusahaan.</p>
+                <p class="text-slate-500 italic"><strong>[EN]</strong> Any breach of data confidentiality or abuse of API features detrimental to the company will be handled according to the company's employment SOP.</p>
             </div>
 
         </div>
 
         <!-- Footer -->
         <div class="mt-12 pt-8 border-t border-slate-100 text-center">
-            <p class="text-xs text-slate-400 font-medium">&copy; {{ date('Y') }} Content Planner (Internal System). Hak Cipta Dilindungi Undang-Undang.</p>
+            <p class="text-xs text-slate-400 font-medium">&copy; {{ date('Y') }} Content Planner (Enterprise Internal System). Hak Cipta Dilindungi.</p>
         </div>
     </div>
 </body>
