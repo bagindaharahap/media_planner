@@ -6,7 +6,7 @@
     <title>Syarat dan Ketentuan - Content Planner</title>
     
     <!-- Favicon -->
-    <link rel="icon" href="https://i.ibb.co.com/6c76TKZN/Logo-IBEKAMI.png">
+    <link rel="icon" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
     
     <!-- Tailwind CSS & Font Awesome -->
     <script src="https://cdn.tailwindcss.com"></script>

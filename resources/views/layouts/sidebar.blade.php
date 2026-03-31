@@ -4,7 +4,7 @@
         <div class="flex items-center gap-2 text-indigo-600">
             <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-indigo-200 overflow-hidden">
                 <img 
-                    src="https://i.ibb.co.com/6c76TKZN/Logo-IBEKAMI.png" 
+                    src="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png" 
                     alt="Logo" 
                     class="w-full h-full object-contain"
                 >

@@ -7,7 +7,7 @@
     <title>@yield('title', 'Content Planner')</title>
     
     <!-- Favicon -->
-    <link rel="icon" href="https://i.ibb.co.com/6c76TKZN/Logo-IBEKAMI.png">
+    <link rel="icon" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">

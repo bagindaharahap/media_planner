@@ -32,7 +32,7 @@
                 
                 <!-- PERBAIKAN: Tambahkan p-2.5 atau p-3 agar logo di dalamnya lebih mengecil -->
                 <div class="w-20 h-20 rounded-full bg-white shadow-md shrink-0 flex items-center justify-center p-2.5">
-                    <img src="https://i.ibb.co.com/6c76TKZN/Logo-IBEKAMI.png" alt="Profile" class="w-full h-full object-contain">
+                    <img src="https://i.ibb.co.com/7xhN2t3v/Logo-IBEKAMI.png" alt="Profile" class="w-full h-full object-contain">
                 </div>
 
                 <div>
