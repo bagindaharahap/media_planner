@@ -3,14 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <!-- TikTok Verification Meta Tag -->
     <meta name="tiktok-developers-site-verification" content="wgOSUWXk7QS0o0uTkNAYHtBW9JnlovQI">
-    <title>Content Planner - Multi-Platform Internal CMS</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
+
+    <title>Content Planner - IBEKAMI</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
         .gradient-text {
             background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
             -webkit-background-clip: text;
@@ -23,8 +36,10 @@
     <!-- Simple Navigation -->
     <nav class="p-6 flex justify-between items-center max-w-7xl mx-auto border-b border-slate-100">
         <div class="flex items-center gap-2 font-black text-2xl text-indigo-600 tracking-tighter">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-                <i class="fa-solid fa-calendar-check"></i>
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 overflow-hidden">
+                <img src="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png" 
+                    alt="Logo" 
+                    class="w-full h-full object-cover">
             </div>
             Content Planner
         </div>
@@ -186,7 +201,7 @@
         <div class="flex flex-col md:flex-row justify-between items-center gap-6 border-t border-slate-100 pt-12">
             <div class="flex flex-col items-center md:items-start gap-2">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    &copy; 2026 Content Planner Internal System - Multi-Platform Content Solutions
+                    &copy; 2026 Content Planner Internal IBEKAMI. All rights reserved.
                 </p>
                 <p class="text-[9px] text-slate-300 font-medium italic">Powered by Meta Graph API & TikTok Business API</p>
             </div>
