@@ -93,6 +93,7 @@
         <!-- ========================================== -->
         <div class="pt-6 hidden md:block">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mb-2">Social Accounts</p>
+
             <a href="{{ route('instagram.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('instagram.index') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
                 <div class="flex items-center gap-3">
                     <i class="fa-brands fa-instagram text-pink-500"></i>
@@ -100,6 +101,7 @@
                 </div>
                 <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" title="API Connected"></span>
             </a>
+
             <a href="{{ route('tiktok.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('tiktok.index') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all mt-1">
                 <div class="flex items-center gap-3">
                     <i class="fa-brands fa-tiktok text-slate-900"></i>
@@ -107,6 +109,19 @@
                 </div>
                 <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" title="API Connected"></span>
             </a>
+
+            <!-- Integration Management (Admin Only) -->
+            @if(Auth::check() && strtolower(Auth::user()->role) === 'admin')
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4 mt-6 mb-2">System</p>
+
+                <a href="{{ route('manage.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('manage.*') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }} rounded-xl transition-all">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-plug text-indigo-500"></i>
+                        <span class="font-semibold text-sm">Integration Management</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                </a>
+            @endif
         </div>
 
         <!-- ========================================== -->

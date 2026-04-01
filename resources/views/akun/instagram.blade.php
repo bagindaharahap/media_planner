@@ -16,9 +16,19 @@
                 <p class="text-sm text-slate-500 mt-1">Monitor performance, engagement, and growth of your Meta accounts.</p>
             </div>
         </div>
-        <span class="px-4 py-2 bg-green-50 text-green-600 font-bold text-xs rounded-xl flex items-center gap-2 border border-green-100">
-            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> API Connected
-        </span>
+        
+        <!-- ACTION BUTTONS -->
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <!-- INSTAGRAM OAUTH BUTTON (Connect Account) -->
+            <a href="{{ route('instagram.connect') }}" class="flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-pink-200 active:scale-95">
+                <i class="fa-brands fa-instagram text-lg"></i>
+                Connect Official Account
+            </a>
+            
+            <span class="hidden md:flex px-4 py-3 bg-green-50 text-green-600 font-bold text-xs rounded-2xl items-center gap-2 border border-green-100">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> API Connected
+            </span>
+        </div>
     </div>
 
     <!-- 1. Account Profile & Core Metrics -->
