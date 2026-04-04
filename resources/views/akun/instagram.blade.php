@@ -19,17 +19,28 @@
         
         <!-- ACTION BUTTONS -->
         <div class="flex items-center gap-3 w-full md:w-auto">
-            <!-- INSTAGRAM OAUTH BUTTON (Connect Account) -->
-            <a href="{{ route('instagram.connect') }}" class="flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-pink-200 active:scale-95">
+            <a href="#" class="flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-pink-200 active:scale-95">
                 <i class="fa-brands fa-instagram text-lg"></i>
                 Connect Official Account
             </a>
             
-            <span class="hidden md:flex px-4 py-3 bg-green-50 text-green-600 font-bold text-xs rounded-2xl items-center gap-2 border border-green-100">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> API Connected
-            </span>
+            @if(isset($apiError))
+                <span class="hidden md:flex px-4 py-3 bg-red-50 text-red-600 font-bold text-xs rounded-2xl items-center gap-2 border border-red-100">
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span> Error API
+                </span>
+            @elseif(isset($profileData))
+                <span class="hidden md:flex px-4 py-3 bg-green-50 text-green-600 font-bold text-xs rounded-2xl items-center gap-2 border border-green-100">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> API Connected
+                </span>
+            @endif
         </div>
     </div>
+
+    @if(isset($apiError))
+    <div class="bg-red-50 border border-red-200 text-red-600 p-4 rounded-2xl mb-6">
+        <strong>Gagal menghubungkan Instagram API:</strong> {{ $apiError }}
+    </div>
+    @endif
 
     <!-- 1. Account Profile & Core Metrics -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -38,33 +49,38 @@
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
             
             <div class="relative z-10 flex items-center gap-5 mb-6">
-                <!-- Profile Image Fix -->
+                <!-- Profile Image -->
                 <div class="w-20 h-20 rounded-full bg-white shadow-md shrink-0 flex items-center justify-center p-2.5">
                     <img src="https://i.ibb.co.com/7xhN2t3v/Logo-IBEKAMI.png" alt="Profile IG" class="w-full h-full object-contain">
                 </div>
                 <div>
-                    <h3 class="text-xl font-black">@ibekami.id</h3>
-                    <p class="text-pink-100 text-xs font-medium mt-1"><i class="fa-solid fa-circle-check text-blue-400"></i> Official Business Account</p>
+                    <!-- Data Dinamis dari API Controller -->
+                    <h3 class="text-xl font-black">{{ $profileData['username'] ?? '@memuat...' }}</h3>
+                    <p class="text-pink-100 text-xs font-medium mt-1">
+                        <i class="fa-solid fa-circle-check text-blue-400"></i> 
+                        {{ isset($profileData['account_type']) && $profileData['account_type'] === 'BUSINESS' ? 'Official Business Account' : ($profileData['account_type'] ?? 'Personal Account') }}
+                    </p>
                 </div>
             </div>
 
             <div class="grid grid-cols-3 gap-4 border-t border-white/20 pt-6">
                 <div class="text-center">
-                    <p class="text-2xl font-black">128K</p>
+                    <p class="text-2xl font-black" title="Basic API tidak mendukung pengambilan data Followers">-</p>
                     <p class="text-[10px] uppercase tracking-widest text-pink-100 font-bold mt-1">Followers</p>
                 </div>
                 <div class="text-center border-l border-white/20">
-                    <p class="text-2xl font-black">450</p>
+                    <p class="text-2xl font-black" title="Basic API tidak mendukung pengambilan data Following">-</p>
                     <p class="text-[10px] uppercase tracking-widest text-pink-100 font-bold mt-1">Following</p>
                 </div>
                 <div class="text-center border-l border-white/20">
-                    <p class="text-2xl font-black">1.2K</p>
+                    <!-- Data Dinamis dari API -->
+                    <p class="text-2xl font-black">{{ isset($profileData['media_count']) ? number_format($profileData['media_count']) : 0 }}</p>
                     <p class="text-[10px] uppercase tracking-widest text-pink-100 font-bold mt-1">Posts</p>
                 </div>
             </div>
         </div>
 
-        <!-- Profile Detail Metrics (Insights) -->
+        <!-- Profile Detail Metrics (Insights - MOCKUP) -->
         <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-center">
                 <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center mb-4"><i class="fa-solid fa-eye"></i></div>
@@ -93,7 +109,7 @@
         </div>
     </div>
 
-    <!-- 2. Interaction & Growth Charts -->
+    <!-- 2. Interaction & Growth Charts (MOCKUP) -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <div class="flex justify-between items-center mb-6">
@@ -110,40 +126,29 @@
                 <h3 class="font-bold text-lg text-slate-800">Top Cities & Countries</h3>
                 <span class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-lg">Meta API</span>
             </div>
-            
             <div class="space-y-5 mt-4">
-                <!-- City Progress Bars -->
                 <div>
-                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-2">
-                        <span>1. Jakarta, Indonesia</span><span>45%</span>
-                    </div>
+                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-2"><span>1. Jakarta, Indonesia</span><span>45%</span></div>
                     <div class="w-full bg-slate-100 rounded-full h-2.5"><div class="bg-pink-500 h-2.5 rounded-full" style="width: 45%"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-2">
-                        <span>2. Bandung, Indonesia</span><span>20%</span>
-                    </div>
+                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-2"><span>2. Bandung, Indonesia</span><span>20%</span></div>
                     <div class="w-full bg-slate-100 rounded-full h-2.5"><div class="bg-pink-400 h-2.5 rounded-full" style="width: 20%"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-2">
-                        <span>3. Surabaya, Indonesia</span><span>15%</span>
-                    </div>
+                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-2"><span>3. Surabaya, Indonesia</span><span>15%</span></div>
                     <div class="w-full bg-slate-100 rounded-full h-2.5"><div class="bg-pink-300 h-2.5 rounded-full" style="width: 15%"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-2">
-                        <span>4. Kuala Lumpur, Malaysia</span><span>8%</span>
-                    </div>
+                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-2"><span>4. Kuala Lumpur, Malaysia</span><span>8%</span></div>
                     <div class="w-full bg-slate-100 rounded-full h-2.5"><div class="bg-pink-200 h-2.5 rounded-full" style="width: 8%"></div></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Demographics & Traffic Source -->
+    <!-- 3. Demographics & Traffic Source (MOCKUP) -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Age & Gender -->
         <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm lg:col-span-2">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -151,12 +156,9 @@
                     <p class="text-[10px] text-slate-400 font-medium">Audience Demographic Data</p>
                 </div>
             </div>
-            <div class="h-[220px] w-full">
-                <canvas id="demographicChart"></canvas>
-            </div>
+            <div class="h-[220px] w-full"><canvas id="demographicChart"></canvas></div>
         </div>
 
-        <!-- Traffic Source -->
         <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
             <div class="flex justify-between items-center mb-2">
                 <div>
@@ -180,7 +182,7 @@
         </div>
     </div>
 
-    <!-- 4. Specific Instagram Analysis -->
+    <!-- 4. Specific Instagram Analysis (MOCKUP) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 w-20 h-20 bg-pink-50 rounded-full transition-transform group-hover:scale-150 z-0"></div>
@@ -251,47 +253,56 @@
         </div>
     </div>
 
-    <!-- 5. Top Performing Posts -->
+    <!-- 5. Top Performing Posts (DINAMIS DARI API) -->
     <div>
         <div class="flex items-center justify-between mb-6">
             <h3 class="font-bold text-xl text-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-fire text-orange-500"></i> Top Feed & Reels Posts
+                <i class="fa-solid fa-fire text-orange-500"></i> Latest Feed & Reels Posts
             </h3>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" x-data>
-            <template x-for="i in [1,2,3,4]" :key="i">
-                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition">
-                    <div class="h-48 bg-slate-200 relative">
-                        <img :src="'https://picsum.photos/400/300?random=' + i" alt="Post" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-md text-white px-2 py-1 rounded-lg text-[10px] font-bold">
-                            <i class="fa-solid fa-play mr-1"></i> Reels
+        
+        <!-- Container Galeri Dinamis Server-Side Rendering -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @if(isset($mediaData) && count($mediaData) > 0)
+                @foreach($mediaData as $post)
+                    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition">
+                        <div class="h-48 bg-slate-200 relative">
+                            @if(isset($post['media_type']) && $post['media_type'] === 'VIDEO')
+                                <img src="{{ $post['thumbnail_url'] ?? '' }}" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-2 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-play mr-1"></i> Reels</div>
+                            @elseif(isset($post['media_type']) && $post['media_type'] === 'CAROUSEL_ALBUM')
+                                <img src="{{ $post['media_url'] ?? '' }}" alt="Carousel" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-2 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-images mr-1"></i> Carousel</div>
+                            @else
+                                <img src="{{ $post['media_url'] ?? '' }}" alt="Image" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @endif
+                        </div>
+                        <div class="p-5 flex flex-col justify-between" style="min-height: 140px;">
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">
+                                    <i class="fa-regular fa-calendar mr-1"></i> 
+                                    {{ isset($post['timestamp']) ? \Carbon\Carbon::parse($post['timestamp'])->format('d M Y') : '' }}
+                                </p>
+                                <p class="text-sm text-slate-700 font-medium line-clamp-2 mb-4 leading-snug">{{ $post['caption'] ?? 'Tanpa caption' }}</p>
+                            </div>
+                            <a href="{{ $post['permalink'] ?? '#' }}" target="_blank" class="text-[11px] font-black text-pink-500 hover:text-pink-600 transition flex items-center gap-1">
+                                Buka di Instagram <i class="fa-solid fa-arrow-right-long"></i>
+                            </a>
                         </div>
                     </div>
-                    <div class="p-5">
-                        <p class="text-xs text-slate-400 font-medium mb-3">2 Days Ago</p>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reach</p>
-                                <p class="text-lg font-black text-slate-800" x-text="Math.floor(Math.random() * 50 + 10) + 'K'"></p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Saves</p>
-                                <p class="text-lg font-black text-slate-800" x-text="Math.floor(Math.random() * 900 + 100)"></p>
-                            </div>
-                            <div class="col-span-2 flex items-center gap-4 text-sm font-bold text-slate-600 mt-2">
-                                <span class="flex items-center gap-1.5"><i class="fa-regular fa-heart text-pink-500"></i> <span x-text="Math.floor(Math.random() * 5 + 1) + 'K'"></span></span>
-                                <span class="flex items-center gap-1.5"><i class="fa-regular fa-comment text-indigo-500"></i> <span x-text="Math.floor(Math.random() * 200 + 50)"></span></span>
-                            </div>
-                        </div>
-                    </div>
+                @endforeach
+            @else
+                <div class="col-span-full bg-slate-50 border border-slate-100 text-center text-slate-500 p-8 rounded-[2rem]">
+                    Belum ada postingan atau gagal memuat data media.
                 </div>
-            </template>
+            @endif
         </div>
     </div>
 </div>
 
 @push('scripts')
 <script>
+    // Eksekusi Render Chart
     function renderIGCharts() {
         if (typeof Chart === 'undefined') {
             setTimeout(renderIGCharts, 100);
@@ -337,13 +348,12 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, usePointStyle: true, font: { size: 10, weight: 'bold', family: "'Plus Jakarta Sans', sans-serif" } } } },
-                    scales: { y: { display: false, grid: { display: false } }, x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold', family: "'Plus Jakarta Sans', sans-serif" }, color: '#94a3b8' } } }
+                    plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, usePointStyle: true, font: { size: 10, weight: 'bold' } } } },
+                    scales: { y: { display: false, grid: { display: false } }, x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#94a3b8' } } }
                 }
             });
         }
 
-        // Traffic Source Doughnut
         const ctxTrafficIG = document.getElementById('trafficSourceIGChart')?.getContext('2d');
         if(ctxTrafficIG) {
             new Chart(ctxTrafficIG, {
@@ -357,6 +367,7 @@
         }
     }
 
+    // Jalankan Chart saat halaman di-load
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', renderIGCharts);
     } else {

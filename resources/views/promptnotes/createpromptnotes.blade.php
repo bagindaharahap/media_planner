@@ -70,4 +70,4 @@
             <button @click="savePrompt()" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95">Save Prompt</button>
         </div>
     </div>
-</div>
+</div>  

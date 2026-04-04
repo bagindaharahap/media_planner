@@ -4,54 +4,118 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class InstagramController extends Controller
 {
-    public function redirectToMeta()
+    /**
+     * Menampilkan halaman dashboard Instagram
+     */
+    public function index()
     {
-        $appId = config('services.meta.client_id');
-        $redirectUri = urlencode(route('instagram.callback')); 
-        $state = Str::random(16); 
-        
-        session(['meta_oauth_state' => $state]);
+        $accessToken = env('INSTAGRAM_ACCESS_TOKEN');
+        $userId = env('INSTAGRAM_USER_ID');
+        $baseUrl = 'https://graph.instagram.com/';
 
-        // URL Login Resmi Meta/Facebook
-        $url = "https://www.facebook.com/v19.0/dialog/oauth" .
-               "?client_id={$appId}" .
-               "&redirect_uri={$redirectUri}" .
-               "&state={$state}" .
-               "&scope=instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement";
+        $profileData = null;
+        $mediaData = [];
+        $apiError = null;
 
-        return redirect($url);
+        if (empty($accessToken) || empty($userId)) {
+            $apiError = 'Token atau User ID Instagram belum dikonfigurasi di .env';
+        } else {
+            try {
+                // 1. Ambil Profil Dasar
+                $profileResponse = Http::get("{$baseUrl}{$userId}", [
+                    'fields' => 'id,username,account_type,media_count',
+                    'access_token' => $accessToken
+                ]);
+
+                if ($profileResponse->successful()) {
+                    $profileData = $profileResponse->json();
+                } else {
+                    $apiError = $profileResponse->json('error.message') ?? 'Gagal mengambil profil dari Instagram.';
+                }
+
+                // 2. Ambil Postingan Media (Reels & Feed)
+                $mediaResponse = Http::get("{$baseUrl}{$userId}/media", [
+                    'fields' => 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp',
+                    'limit' => 8,
+                    'access_token' => $accessToken
+                ]);
+
+                if ($mediaResponse->successful()) {
+                    $mediaData = $mediaResponse->json()['data'] ?? [];
+                }
+            } catch (\Exception $e) {
+                Log::error("Instagram Fetch Error: " . $e->getMessage());
+                $apiError = "Terjadi kesalahan jaringan saat menghubungi API Instagram.";
+            }
+        }
+
+        return view('instagram-monitoring', compact('profileData', 'mediaData', 'apiError'));
     }
 
-    public function handleCallback(Request $request)
+    /**
+     * Mengambil data dari Instagram Graph API
+     * Endpoint ini akan dipanggil oleh JavaScript di frontend (AJAX)
+     */
+    public function getApiData()
     {
-        // Validasi state CSRF
-        if ($request->state !== session('meta_oauth_state')) {
-            return redirect()->route('instagram.index')->withErrors(['msg' => 'State tidak valid.']);
+        $accessToken = env('INSTAGRAM_ACCESS_TOKEN');
+        $userId = env('INSTAGRAM_USER_ID');
+        $baseUrl = 'https://graph.instagram.com/';
+
+        // Validasi konfigurasi .env
+        if (empty($accessToken) || empty($userId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Konfigurasi INSTAGRAM_ACCESS_TOKEN atau INSTAGRAM_USER_ID belum diatur di .env'
+            ], 500);
         }
 
-        $code = $request->code;
+        try {
+            // 1. Request Data Profil Pengguna
+            $profileResponse = Http::get("{$baseUrl}{$userId}", [
+                'fields' => 'id,username,account_type,media_count',
+                'access_token' => $accessToken
+            ]);
 
-        // Proses tukar 'code' dengan 'access_token' (Contoh)
-        $response = Http::get('https://graph.facebook.com/v19.0/oauth/access_token', [
-            'client_id'     => config('services.meta.client_id'),
-            'client_secret' => config('services.meta.client_secret'),
-            'redirect_uri'  => route('instagram.callback'),
-            'code'          => $code,
-        ]);
+            if ($profileResponse->failed()) {
+                // Log error untuk keperluan debugging backend
+                Log::error('Instagram API Profile Error: ' . $profileResponse->body());
+                throw new \Exception('Gagal mengambil data profil dari Instagram.');
+            }
 
-        if ($response->successful()) {
-            $data = $response->json();
-            $accessToken = $data['access_token'];
-            
-            // Simpan Token Anda di sini
-            
-            return redirect()->route('instagram.index')->with('success', 'Akun Instagram berhasil dihubungkan!');
+            $profileData = $profileResponse->json();
+
+            // 2. Request Data Media (Postingan & Reels)
+            $mediaResponse = Http::get("{$baseUrl}{$userId}/media", [
+                'fields' => 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp',
+                'limit' => 8,
+                'access_token' => $accessToken
+            ]);
+
+            if ($mediaResponse->failed()) {
+                Log::error('Instagram API Media Error: ' . $mediaResponse->body());
+                throw new \Exception('Gagal mengambil data media dari Instagram.');
+            }
+
+            $mediaData = $mediaResponse->json();
+
+            // 3. Kembalikan data sukses ke frontend
+            return response()->json([
+                'success' => true,
+                'profile' => $profileData,
+                'media' => $mediaData['data'] ?? []
+            ]);
+
+        } catch (\Exception $e) {
+            // Tangkap dan kembalikan pesan error
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        return redirect()->route('instagram.index')->withErrors(['msg' => 'Gagal mendapatkan token akses Meta.']);
     }
 }

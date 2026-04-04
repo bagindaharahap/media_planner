@@ -111,7 +111,7 @@
 
         <!-- Footer -->
         <div class="mt-12 pt-8 border-t border-slate-100 text-center">
-            <p class="text-xs text-slate-400 font-medium">&copy; {{ date('Y') }} Content Planner (Enterprise Internal System). Hak Cipta Dilindungi.</p>
+            <p class="text-xs text-slate-400 font-medium">&copy; {{ date('Y') }} Content Planner Internal IBEKAMI. All rights reserved.</p>
         </div>
     </div>
 </body>

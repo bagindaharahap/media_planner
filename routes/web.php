@@ -7,6 +7,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromptNoteController;
 use App\Http\Controllers\LogController;
+// PERBAIKAN: Tambahkan baris import ini agar Laravel mengenali TikTokController
 use App\Http\Controllers\TikTokController;
 use App\Http\Controllers\InstagramController;
 
@@ -17,21 +18,27 @@ use App\Http\Controllers\InstagramController;
 */
 
 // ==========================================
-// AUTHENTICATION & PUBLIC ROUTES
+// AUTHENTICATION & PUBLIC ROUTES (Bebas Akses / Tanpa Login)
 // ==========================================
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
+
+// ==========================================
+// Halaman Terms, Privacy, dan Login Cepat (Harus diluar middleware auth)
+// ==========================================
 Route::get('/login-as/{id}', [AuthController::class, 'loginAsUser'])->name('login.as');
 Route::get('/terms-conditions', function() { return view('terms'); })->name('terms');
 Route::get('/privacy-policy', function() { return view('privacy'); })->name('privacy');
+
 
 // ==========================================
 // PROTECTED ROUTES (Wajib Login)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
     
+    // Logout sebaiknya di dalam middleware karena butuh sesi aktif
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Dashboard
@@ -40,29 +47,44 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard', compact('plannings'));
     })->name('dashboard');
 
-    // BOARD PLANNING
+    // ==========================================
+    // BOARD PLANNING ROUTES
+    // ==========================================
     Route::get('/board-planning', [PlanningController::class, 'index'])->name('board.index');
     Route::post('/board-planning', [PlanningController::class, 'store'])->name('board.store');
     Route::put('/board-planning/{id}', [PlanningController::class, 'update'])->name('board.update');
     Route::delete('/board-planning/{id}', [PlanningController::class, 'destroy'])->name('board.destroy');
+    Route::post('/board-planning/upload-media', [PlanningController::class, 'uploadMedia'])->name('board.uploadMedia');
 
-    // CALENDAR & NOTES
+    // ==========================================
+    // CALENDAR & NOTES ROUTES
+    // ==========================================
     Route::get('/calendar', [PlanningController::class, 'calendar'])->name('calendar.index');
+    
+    Route::get('/calendar/notes/{note}', [NoteController::class, 'show'])->name('calendar.notes.show');
+    Route::get('/calendar/notes/{note}/edit', [NoteController::class, 'edit'])->name('calendar.notes.edit');
+    
     Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
     Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
     Route::put('/notes/{note}', [NoteController::class, 'update'])->name('notes.update');
     Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
-    // PROMPT NOTES
+    // ==========================================
+    // PROMPT NOTES ROUTES (Terintegrasi Database)
+    // ==========================================
     Route::get('/prompt-notes', [PromptNoteController::class, 'index'])->name('prompt.index');
     Route::post('/prompt-notes', [PromptNoteController::class, 'store'])->name('prompt.store');
     Route::put('/prompt-notes/{id}', [PromptNoteController::class, 'update'])->name('prompt.update');
     Route::delete('/prompt-notes/{id}', [PromptNoteController::class, 'destroy'])->name('prompt.destroy');
 
-    // LOGS
+    // ==========================================
+    // LOGS ACTIVITY (Semua user yang login)
+    // ==========================================
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 
-    // MONITORING
+    // ==========================================
+    // MONITORING MEDIA SOSIAL (Instagram & TikTok)
+    // ==========================================
     Route::get('/instagram', function () {
         return view('akun.instagram');
     })->name('instagram.index');
@@ -71,21 +93,25 @@ Route::middleware(['auth'])->group(function () {
         return view('akun.tiktok');
     })->name('tiktok.index');
 
-    // MANAJEMEN INTEGRASI
+    // Rute Koneksi TikTok
+    Route::get('/tiktok/connect', [TikTokController::class, 'redirectToTikTok'])->name('tiktok.connect');
+    Route::get('/tiktok/callback', [TikTokController::class, 'handleCallback'])->name('tiktok.callback');
+
+    Route::get('/instagram-monitoring', [InstagramController::class, 'index'])->name('instagram.index');
+    Route::get('/api/instagram-data', [InstagramController::class, 'getApiData'])->name('instagram.data');
+
     Route::get('/social-manage', function () {
         return view('akun.manage');
     })->name('manage.index');
 
-    // TIKTOK OAUTH
-    Route::get('/tiktok/connect', [TikTokController::class, 'redirectToTikTok'])->name('tiktok.connect');
-    Route::get('/tiktok/callback', [TikTokController::class, 'handleCallback'])->name('tiktok.callback');
-
-    // INSTAGRAM / META OAUTH
-    Route::get('/instagram/connect', [InstagramController::class, 'redirectToMeta'])->name('instagram.connect');
-    Route::get('/instagram/callback', [InstagramController::class, 'handleCallback'])->name('instagram.callback');
-
-    // USER MANAGEMENT (Admin Only)
+    // ==========================================
+    // USER MANAGEMENT ROUTES (Admin Only)
+    // ==========================================
     Route::middleware(['role:Admin'])->group(function () {
         Route::get('/management-akun', [UserController::class, 'index'])->name('users.index');
+        Route::post('/management-akun', [UserController::class, 'store'])->name('users.store');
+        Route::put('/management-akun/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/management-akun/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
+
 });
