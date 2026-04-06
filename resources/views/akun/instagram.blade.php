@@ -65,11 +65,11 @@
 
             <div class="grid grid-cols-3 gap-4 border-t border-white/20 pt-6">
                 <div class="text-center">
-                    <p class="text-2xl font-black" title="Basic API tidak mendukung pengambilan data Followers">-</p>
+                    <p class="text-2xl font-black">{{ isset($profileData['followers_count']) ? number_format($profileData['followers_count']) : '-' }}</p>
                     <p class="text-[10px] uppercase tracking-widest text-pink-100 font-bold mt-1">Followers</p>
                 </div>
                 <div class="text-center border-l border-white/20">
-                    <p class="text-2xl font-black" title="Basic API tidak mendukung pengambilan data Following">-</p>
+                    <p class="text-2xl font-black">{{ isset($profileData['follows_count']) ? number_format($profileData['follows_count']) : '-' }}</p>
                     <p class="text-[10px] uppercase tracking-widest text-pink-100 font-bold mt-1">Following</p>
                 </div>
                 <div class="text-center border-l border-white/20">
@@ -284,6 +284,29 @@
                                     {{ isset($post['timestamp']) ? \Carbon\Carbon::parse($post['timestamp'])->format('d M Y') : '' }}
                                 </p>
                                 <p class="text-sm text-slate-700 font-medium line-clamp-2 mb-4 leading-snug">{{ $post['caption'] ?? 'Tanpa caption' }}</p>
+
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px] text-slate-600 font-bold mb-4">
+                                    <div class="p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                                        <p class="text-sm text-slate-900 font-black">{{ number_format($post['like_count'] ?? 0) }}</p>
+                                        <p class="text-[9px] uppercase tracking-wider text-slate-400 mt-1">Likes</p>
+                                    </div>
+                                    <div class="p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                                        <p class="text-sm text-slate-900 font-black">{{ number_format($post['comments_count'] ?? 0) }}</p>
+                                        <p class="text-[9px] uppercase tracking-wider text-slate-400 mt-1">Comments</p>
+                                    </div>
+                                    <div class="p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                                        <p class="text-sm text-slate-900 font-black">{{ isset($post['reach_count']) ? number_format($post['reach_count']) : '-' }}</p>
+                                        <p class="text-[9px] uppercase tracking-wider text-slate-400 mt-1">Reach</p>
+                                    </div>
+                                    <div class="p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                                        <p class="text-sm text-slate-900 font-black">{{ isset($post['impressions_count']) ? number_format($post['impressions_count']) : '-' }}</p>
+                                        <p class="text-[9px] uppercase tracking-wider text-slate-400 mt-1">Impressions</p>
+                                    </div>
+                                    <div class="p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                                        <p class="text-sm text-slate-900 font-black">{{ isset($post['engagement_count']) ? number_format($post['engagement_count']) : '-' }}</p>
+                                        <p class="text-[9px] uppercase tracking-wider text-slate-400 mt-1">Engagement</p>
+                                    </div>
+                                </div>
                             </div>
                             <a href="{{ $post['permalink'] ?? '#' }}" target="_blank" class="text-[11px] font-black text-pink-500 hover:text-pink-600 transition flex items-center gap-1">
                                 Buka di Instagram <i class="fa-solid fa-arrow-right-long"></i>
@@ -316,12 +339,17 @@
             gradientIg.addColorStop(0, 'rgba(236, 72, 153, 0.2)');
             gradientIg.addColorStop(1, 'rgba(236, 72, 153, 0)');
 
+            const engagementLabels = @json($engagementChartLabels ?? []);
+            const engagementData = @json($engagementChartValues ?? []);
+            const chartLabels = engagementLabels.length ? engagementLabels : ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            const chartData = engagementData.length ? engagementData : [12000, 15400, 14200, 18900];
+
             new Chart(ctxIG, {
                 type: 'line',
                 data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    labels: chartLabels,
                     datasets: [{
-                        label: 'Interactions (Likes + Comments)', data: [12000, 15400, 14200, 18900],
+                        label: 'Interactions (Likes + Comments)', data: chartData,
                         borderColor: '#ec4899', borderWidth: 4, tension: 0.4, fill: true,
                         backgroundColor: gradientIg, pointBackgroundColor: '#ec4899', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 8,
                     }]

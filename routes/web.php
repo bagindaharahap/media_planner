@@ -44,7 +44,55 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
         $plannings = \App\Models\Planning::all();
-        return view('dashboard', compact('plannings'));
+
+        // Ambil data Instagram dari API
+        $instagramData = null;
+        $accessToken = env('INSTAGRAM_ACCESS_TOKEN');
+        $userId = env('INSTAGRAM_USER_ID');
+
+        if (!empty($accessToken) && !empty($userId)) {
+            try {
+                $baseUrl = 'https://graph.instagram.com/';
+
+                // Ambil profil dasar
+                $profileResponse = \Illuminate\Support\Facades\Http::get("{$baseUrl}{$userId}", [
+                    'fields' => 'id,username,account_type,media_count,followers_count,follows_count',
+                    'access_token' => $accessToken
+                ]);
+
+                if ($profileResponse->successful()) {
+                    $instagramData = $profileResponse->json();
+                }
+
+                // Ambil data media untuk engagement
+                $mediaResponse = \Illuminate\Support\Facades\Http::get("{$baseUrl}{$userId}/media", [
+                    'fields' => 'id,like_count,comments_count',
+                    'limit' => 10,
+                    'access_token' => $accessToken
+                ]);
+
+                if ($mediaResponse->successful()) {
+                    $mediaData = $mediaResponse->json()['data'] ?? [];
+                    $totalLikes = 0;
+                    $totalComments = 0;
+                    $totalPosts = count($mediaData);
+
+                    foreach ($mediaData as $post) {
+                        $totalLikes += $post['like_count'] ?? 0;
+                        $totalComments += $post['comments_count'] ?? 0;
+                    }
+
+                    $instagramData['total_likes'] = $totalLikes;
+                    $instagramData['total_comments'] = $totalComments;
+                    $instagramData['total_posts'] = $totalPosts;
+                    $instagramData['engagement_rate'] = $totalPosts > 0 ? round((($totalLikes + $totalComments) / $totalPosts) * 100, 2) : 0;
+                }
+            } catch (\Exception $e) {
+                // Jika error, tetap lanjutkan tanpa data Instagram
+            }
+        }
+
+        return view('dashboard', compact('plannings', 'instagramData'));
     })->name('dashboard');
 
     // ==========================================
@@ -85,9 +133,7 @@ Route::middleware(['auth'])->group(function () {
     // ==========================================
     // MONITORING MEDIA SOSIAL (Instagram & TikTok)
     // ==========================================
-    Route::get('/instagram', function () {
-        return view('akun.instagram');
-    })->name('instagram.index');
+    Route::get('/instagram', [InstagramController::class, 'index'])->name('instagram.index');
 
     Route::get('/tiktok', function () {
         return view('akun.tiktok');
@@ -97,7 +143,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tiktok/connect', [TikTokController::class, 'redirectToTikTok'])->name('tiktok.connect');
     Route::get('/tiktok/callback', [TikTokController::class, 'handleCallback'])->name('tiktok.callback');
 
-    Route::get('/instagram-monitoring', [InstagramController::class, 'index'])->name('instagram.index');
+    Route::get('/instagram-monitoring', [InstagramController::class, 'index'])->name('instagram.monitoring');
     Route::get('/api/instagram-data', [InstagramController::class, 'getApiData'])->name('instagram.data');
 
     Route::get('/social-manage', function () {

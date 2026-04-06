@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class InstagramController extends Controller
 {
@@ -20,6 +21,8 @@ class InstagramController extends Controller
         $profileData = null;
         $mediaData = [];
         $apiError = null;
+        $engagementChartLabels = [];
+        $engagementChartValues = [];
 
         if (empty($accessToken) || empty($userId)) {
             $apiError = 'Token atau User ID Instagram belum dikonfigurasi di .env';
@@ -27,7 +30,7 @@ class InstagramController extends Controller
             try {
                 // 1. Ambil Profil Dasar
                 $profileResponse = Http::get("{$baseUrl}{$userId}", [
-                    'fields' => 'id,username,account_type,media_count',
+                    'fields' => 'id,username,account_type,media_count,followers_count,follows_count',
                     'access_token' => $accessToken
                 ]);
 
@@ -39,7 +42,7 @@ class InstagramController extends Controller
 
                 // 2. Ambil Postingan Media (Reels & Feed)
                 $mediaResponse = Http::get("{$baseUrl}{$userId}/media", [
-                    'fields' => 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp',
+                    'fields' => 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count',
                     'limit' => 8,
                     'access_token' => $accessToken
                 ]);
@@ -47,13 +50,29 @@ class InstagramController extends Controller
                 if ($mediaResponse->successful()) {
                     $mediaData = $mediaResponse->json()['data'] ?? [];
                 }
+
+                if (!empty($mediaData)) {
+                    $engagementChartLabels = [];
+                    $engagementChartValues = [];
+
+                    foreach ($mediaData as $post) {
+                        $timestamp = $post['timestamp'] ?? null;
+                        $engagementChartLabels[] = $timestamp ? Carbon::parse($timestamp)->format('d M') : 'Unknown';
+                        $likes = isset($post['like_count']) ? (int) $post['like_count'] : 0;
+                        $comments = isset($post['comments_count']) ? (int) $post['comments_count'] : 0;
+                        $engagementChartValues[] = $likes + $comments;
+                    }
+                } else {
+                    $engagementChartLabels = [];
+                    $engagementChartValues = [];
+                }
             } catch (\Exception $e) {
                 Log::error("Instagram Fetch Error: " . $e->getMessage());
                 $apiError = "Terjadi kesalahan jaringan saat menghubungi API Instagram.";
             }
         }
 
-        return view('instagram-monitoring', compact('profileData', 'mediaData', 'apiError'));
+        return view('akun.instagram', compact('profileData', 'mediaData', 'apiError', 'engagementChartLabels', 'engagementChartValues'));
     }
 
     /**
@@ -91,7 +110,7 @@ class InstagramController extends Controller
 
             // 2. Request Data Media (Postingan & Reels)
             $mediaResponse = Http::get("{$baseUrl}{$userId}/media", [
-                'fields' => 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp',
+                'fields' => 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count',
                 'limit' => 8,
                 'access_token' => $accessToken
             ]);

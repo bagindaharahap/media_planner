@@ -17,7 +17,7 @@
         </div>
 
         <!-- Wrapped in Form to Submit Data to Laravel -->
-        <form :action="`{{ url('/management-akun') }}/${selectedUser?.id}`" method="POST" x-show="selectedUser">
+        <form :action="`{{ url('/management-akun') }}/${selectedUser?.id}`" method="POST" x-show="selectedUser" autocomplete="off">
             @csrf
             @method('PUT') <!-- Method Spoofing for Laravel UPDATE -->
             
@@ -48,7 +48,7 @@
                 <div class="space-y-2">
                     <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">New Password</label>
                     <div class="relative">
-                        <input :type="showPassword ? 'text' : 'password'" name="password" placeholder="Leave blank if you do not want to change" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pr-12 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input :type="showPassword ? 'text' : 'password'" name="password" autocomplete="new-password" placeholder="Leave blank if you do not want to change" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pr-12 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500" value="">
                         <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                             <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" class="text-sm"></i>
                         </button>

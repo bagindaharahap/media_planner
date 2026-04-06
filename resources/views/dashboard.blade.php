@@ -9,6 +9,11 @@
     {!! json_encode($plannings ?? []) !!}
 </script>
 
+<!-- Instagram Data from API -->
+<script id="instagram-data" type="application/json">
+    {!! json_encode($instagramData ?? null) !!}
+</script>
+
 <div class="space-y-8" x-data="dashboardData()">
     <!-- Primary Statistics Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -21,7 +26,7 @@
                 <span class="text-green-500 text-[10px] font-bold bg-green-50 px-2 py-1 rounded-lg">+12.4%</span>
             </div>
             <p class="text-slate-500 text-[11px] font-semibold uppercase tracking-wider">IG Engagement</p>
-            <h3 class="text-2xl font-black text-slate-900 mt-1">4.82%</h3>
+            <h3 class="text-2xl font-black text-slate-900 mt-1">{{ isset($instagramData['engagement_rate']) ? $instagramData['engagement_rate'] . '%' : '4.82%' }}</h3>
         </div>
 
         <!-- Tiktok Engagement Rate -->
@@ -45,7 +50,7 @@
                 <span class="text-green-500 text-[10px] font-bold bg-green-50 px-2 py-1 rounded-lg">+8.1%</span>
             </div>
             <p class="text-slate-500 text-[11px] font-semibold uppercase tracking-wider">IG Followers</p>
-            <h3 class="text-2xl font-black text-slate-900 mt-1">128.4K</h3>
+            <h3 class="text-2xl font-black text-slate-900 mt-1">{{ isset($instagramData['followers_count']) ? number_format($instagramData['followers_count']) : '128.4K' }}</h3>
         </div>
 
         <!-- TikTok Stats -->
@@ -486,6 +491,7 @@
             plannings: [],
             upcomingPosts: [],
             statusCounts: { backlog: 0, progress: 0, review: 0, revisi: 0, hold_on: 0, approved: 0, published: 0 },
+            instagramData: null,
             
             // Chart Filter States
             timeFilter: 'weekly',
@@ -496,9 +502,9 @@
                 try {
                     let rawDataText = document.getElementById('plannings-data').textContent;
                     let rawData = JSON.parse(rawDataText);
-                    
+
                     this.plannings = rawData;
-                    
+
                     this.plannings.forEach(p => {
                         if(this.statusCounts[p.status] !== undefined) {
                             this.statusCounts[p.status]++;
@@ -517,8 +523,14 @@
                             return dateA - dateB;
                         });
 
+                    // Load Instagram data
+                    let instagramDataText = document.getElementById('instagram-data').textContent;
+                    if (instagramDataText && instagramDataText.trim()) {
+                        this.instagramData = JSON.parse(instagramDataText);
+                    }
+
                 } catch(e) {
-                    console.error('Plannings data not found or parsing error.', e);
+                    console.error('Data parsing error.', e);
                 }
 
                 this.initPerformanceChart();
@@ -551,7 +563,12 @@
                     },
                     yearly: {
                         labels: ['2023', '2024', '2025', '2026'],
-                        ig: [45.2, 68.4, 89.1, 128.4],
+                        ig: [
+                            45.2,
+                            68.4,
+                            89.1,
+                            this.instagramData && this.instagramData.followers_count ? this.instagramData.followers_count / 1000 : 128.4
+                        ],
                         tiktok: [12.5, 145.2, 450.8, 842.0]
                     }
                 };
