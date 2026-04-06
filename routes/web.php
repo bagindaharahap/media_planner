@@ -10,6 +10,8 @@ use App\Http\Controllers\LogController;
 // PERBAIKAN: Tambahkan baris import ini agar Laravel mengenali TikTokController
 use App\Http\Controllers\TikTokController;
 use App\Http\Controllers\InstagramController;
+// PERBAIKAN: Tambahkan ini untuk fitur Lupa Password
+use App\Http\Controllers\ForgotPasswordController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +25,14 @@ use App\Http\Controllers\InstagramController;
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+
+// ==========================================
+// LUPA PASSWORD ROUTES
+// ==========================================
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ForgotPasswordController::class, 'reset'])->name('password.update');
 
 
 // ==========================================
@@ -52,11 +62,12 @@ Route::middleware(['auth'])->group(function () {
 
         if (!empty($accessToken) && !empty($userId)) {
             try {
-                $baseUrl = 'https://graph.instagram.com/';
+                // Perbaikan: Menggunakan Meta Graph API karena token berawalan IGAA
+                $baseUrl = 'https://graph.facebook.com/v19.0/';
 
                 // Ambil profil dasar
                 $profileResponse = \Illuminate\Support\Facades\Http::get("{$baseUrl}{$userId}", [
-                    'fields' => 'id,username,account_type,media_count,followers_count,follows_count',
+                    'fields' => 'id,username,name,profile_picture_url,media_count,followers_count,follows_count',
                     'access_token' => $accessToken
                 ]);
 

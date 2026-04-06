@@ -3,27 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <!-- TikTok Verification Meta Tag -->
     <meta name="tiktok-developers-site-verification" content="wgOSUWXk7QS0o0uTkNAYHtBW9JnlovQI">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
-    <link rel="apple-touch-icon" href="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png">
-
-    <title>Content Planner - IBEKAMI</title>
-
+    <title>Content Planner - Multi-Platform Internal CMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .gradient-text {
             background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
             -webkit-background-clip: text;
@@ -36,10 +23,8 @@
     <!-- Simple Navigation -->
     <nav class="p-6 flex justify-between items-center max-w-7xl mx-auto border-b border-slate-100">
         <div class="flex items-center gap-2 font-black text-2xl text-indigo-600 tracking-tighter">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 overflow-hidden">
-                <img src="https://i.ibb.co.com/F4pWPd0q/Desain-tanpa-judul-2.png" 
-                    alt="Logo" 
-                    class="w-full h-full object-cover">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                <i class="fa-solid fa-calendar-check"></i>
             </div>
             Content Planner
         </div>
@@ -87,9 +72,7 @@
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl"></div>
             
             <div class="text-center mb-10">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-slate-50 rounded-2xl mb-4">
-                    <i class="fa-solid fa-shield-halved text-indigo-600"></i>
-                </div>
+
                 <h3 class="text-2xl font-black text-slate-800 tracking-tight">Authorized Login</h3>
                 <p class="text-sm text-slate-400 mt-2 font-medium">Restricted access for internal employees.</p>
             </div>
@@ -115,7 +98,12 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">Password</label>
+                    <div class="flex items-center justify-between mb-2 px-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
+                        <a href="{{ route('password.request') }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                            Lupa password?
+                        </a>
+                    </div>
                     <div class="relative">
                         <i class="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
                         <input type="password" name="password" required class="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-bold text-slate-700" placeholder="••••••••">
@@ -201,7 +189,7 @@
         <div class="flex flex-col md:flex-row justify-between items-center gap-6 border-t border-slate-100 pt-12">
             <div class="flex flex-col items-center md:items-start gap-2">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    &copy; 2026 Content Planner Internal IBEKAMI. All rights reserved.
+                    &copy; 2026 Content Planner Internal System - Multi-Platform Content Solutions
                 </p>
                 <p class="text-[9px] text-slate-300 font-medium italic">Powered by Meta Graph API & TikTok Business API</p>
             </div>
