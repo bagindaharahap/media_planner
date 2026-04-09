@@ -58,10 +58,10 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <template x-for="type in ['TikTok', 'Reels', 'Feed', 'Story']" :key="type">
                         <button 
-                            @click="editingPlanning.content_type = type"
+                            @click="toggleContentType(type, 'editing')"
                             type="button"
                             class="flex items-center justify-center gap-3 px-4 py-3 rounded-2xl border-2 font-bold text-sm transition-all"
-                            :class="editingPlanning.content_type === type 
+                            :class="(editingPlanning.content_type || []).includes(type) 
                                 ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100' 
                                 : 'bg-white border-slate-100 text-slate-500 hover:border-indigo-200'"
                         >

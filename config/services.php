@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'tiktok' => [
+        'client_key' => env('TIKTOK_CLIENT_KEY'),
+        'client_secret' => env('TIKTOK_CLIENT_SECRET'),
+        // Comma-separated scopes as required by TikTok Login Kit
+        'scopes' => env('TIKTOK_SCOPES', 'user.info.basic'),
+    ],
+
 ];

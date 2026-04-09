@@ -3,8 +3,24 @@
 @section('title', 'TikTok Monitoring - PlannerX')
 
 @section('content')
+@php
+    $profile = $tiktokProfile ?? [];
+    $displayName = $profile['display_name'] ?? $profile['nickname'] ?? 'TikTok Account';
+    $username = $profile['unique_id'] ?? $profile['username'] ?? '@'.preg_replace('/\s+/', '', strtolower($displayName));
+    $avatar = $profile['avatar'] ?? $profile['avatar_large'] ?? 'https://i.ibb.co/7xhN2t3v/Logo-IBEKAMI.png';
+    $country = $profile['country'] ?? 'Unknown';
+    $language = $profile['language'] ?? 'Unknown';
+    $openId = $profile['open_id'] ?? null;
+    $bio = $profile['bio'] ?? ($profile['signature'] ?? null);
+@endphp
+
 <div class="space-y-8">
-    
+    @if(!empty($errorMessage))
+        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-2xl">
+            <strong>Error:</strong> {{ $errorMessage }}
+        </div>
+    @endif
+
     <!-- HEADER & CONNECT BUTTON -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
         <div class="flex items-center gap-4">
@@ -19,15 +35,23 @@
 
         <div class="flex items-center gap-3 w-full md:w-auto">
             <!-- TIKTOK OAUTH BUTTON (Connect Account) -->
-            <!-- PERBAIKAN: Mengarahkan ke rute tiktok.connect -->
             <a href="{{ route('tiktok.connect') }}" class="flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-slate-200 active:scale-95">
                 <i class="fa-brands fa-tiktok text-lg"></i>
                 Connect Official Account
             </a>
-            
-            <span class="hidden md:flex px-4 py-3 bg-green-50 text-green-600 font-bold text-xs rounded-2xl items-center gap-2 border border-green-100">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> API Connected
-            </span>
+
+            @if($connected)
+                <a href="{{ route('tiktok.disconnect') }}" class="hidden md:inline-flex items-center justify-center gap-2 px-4 py-3 bg-rose-50 text-rose-600 font-bold text-xs rounded-2xl border border-rose-100 hover:bg-rose-100 transition-all">
+                    <i class="fa-solid fa-link-slash"></i> Disconnect
+                </a>
+                <span class="hidden md:flex px-4 py-3 bg-green-50 text-green-600 font-bold text-xs rounded-2xl items-center gap-2 border border-green-100">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> API Connected
+                </span>
+            @else
+                <span class="hidden md:flex px-4 py-3 bg-slate-100 text-slate-500 font-bold text-xs rounded-2xl items-center gap-2 border border-slate-200">
+                    Not connected yet
+                </span>
+            @endif
         </div>
     </div>
 
@@ -40,27 +64,30 @@
             
             <div class="relative z-10 flex items-center gap-5 mb-6">
                 <!-- Logo Container with fixed padding -->
-                <div class="w-20 h-20 rounded-full bg-white shadow-md shrink-0 flex items-center justify-center p-2.5">
-                    <img src="https://i.ibb.co.com/7xhN2t3v/Logo-IBEKAMI.png" alt="Profile" class="w-full h-full object-contain">
+                <div class="w-20 h-20 rounded-full bg-white shadow-md shrink-0 flex items-center justify-center p-2.5 overflow-hidden">
+                    <img src="{{ $avatar }}" alt="Profile" class="w-full h-full object-cover">
                 </div>
 
                 <div>
-                    <h3 class="text-xl font-black">@ibekami.id</h3>
-                    <p class="text-slate-300 text-xs font-medium mt-1"><i class="fa-solid fa-circle-check text-sky-400"></i> Verified Account</p>
+                    <h3 class="text-xl font-black">{{ $displayName }}</h3>
+                    <p class="text-slate-300 text-xs font-medium mt-1"><i class="fa-solid fa-user"></i> {{ $username }}</p>
+                    @if($bio)
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">{{ $bio }}</p>
+                    @endif
                 </div>
             </div>
 
             <div class="grid grid-cols-3 gap-4 border-t border-slate-700 pt-6 relative z-10">
                 <div class="text-center">
-                    <p class="text-2xl font-black">842K</p>
+                    <p class="text-2xl font-black">{{ $profile['follower_count'] ?? 'N/A' }}</p>
                     <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-1">Followers</p>
                 </div>
                 <div class="text-center border-l border-slate-700">
-                    <p class="text-2xl font-black">5.2M</p>
+                    <p class="text-2xl font-black">{{ $profile['heart_count'] ?? 'N/A' }}</p>
                     <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-1">Likes</p>
                 </div>
                 <div class="text-center border-l border-slate-700">
-                    <p class="text-2xl font-black">214</p>
+                    <p class="text-2xl font-black">{{ $videoCount ?? 'N/A' }}</p>
                     <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-1">Videos</p>
                 </div>
             </div>

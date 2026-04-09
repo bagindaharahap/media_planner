@@ -31,6 +31,14 @@ class PlanningController extends Controller
             'assigned', 'references', 'media_link', 'revision_note'
         ]);
 
+        $contentTypes = $data['content_type'] ?? [];
+        if (!is_array($contentTypes)) {
+            $contentTypes = [$contentTypes];
+        }
+        $data['content_type'] = array_values(array_unique(array_filter($contentTypes, function ($v) {
+            return is_string($v) && trim($v) !== '';
+        })));
+
         if (isset($data['assigned']) && is_array($data['assigned'])) {
             $data['assigned'] = array_map(function($a) {
                 return [
@@ -61,6 +69,14 @@ class PlanningController extends Controller
             'start_date', 'due_date', 'priority',
             'assigned', 'references', 'media_link', 'revision_note'
         ]);
+
+        $contentTypes = $data['content_type'] ?? [];
+        if (!is_array($contentTypes)) {
+            $contentTypes = [$contentTypes];
+        }
+        $data['content_type'] = array_values(array_unique(array_filter($contentTypes, function ($v) {
+            return is_string($v) && trim($v) !== '';
+        })));
 
         if (isset($data['assigned']) && is_array($data['assigned'])) {
             $data['assigned'] = array_map(function($a) {

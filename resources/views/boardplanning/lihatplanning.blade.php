@@ -25,7 +25,16 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2 mb-0.5">
-                        <span class="px-2 py-0.5 bg-indigo-600 text-white text-[9px] font-black rounded-lg uppercase tracking-tighter" x-text="viewingPlanning.content_type"></span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <template x-if="viewingPlanning.content_type && viewingPlanning.content_type.length">
+                                <template x-for="type in viewingPlanning.content_type" :key="type">
+                                    <span class="px-2 py-0.5 bg-indigo-600 text-white text-[9px] font-black rounded-lg uppercase tracking-tighter" x-text="type"></span>
+                                </template>
+                            </template>
+                            <template x-if="!viewingPlanning.content_type || !viewingPlanning.content_type.length">
+                                <span class="px-2 py-0.5 bg-slate-200 text-slate-500 text-[9px] font-black rounded-lg uppercase tracking-tighter">No Type</span>
+                            </template>
+                        </div>
                         <h3 class="text-xl font-extrabold text-slate-800 tracking-tight" x-text="viewingPlanning.title"></h3>
                     </div>
                     <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">Content Planning Details</p>

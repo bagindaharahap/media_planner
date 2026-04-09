@@ -146,13 +146,12 @@ Route::middleware(['auth'])->group(function () {
     // ==========================================
     Route::get('/instagram', [InstagramController::class, 'index'])->name('instagram.index');
 
-    Route::get('/tiktok', function () {
-        return view('akun.tiktok');
-    })->name('tiktok.index');
+    Route::get('/tiktok', [TikTokController::class, 'index'])->name('tiktok.index');
 
     // Rute Koneksi TikTok
     Route::get('/tiktok/connect', [TikTokController::class, 'redirectToTikTok'])->name('tiktok.connect');
     Route::get('/tiktok/callback', [TikTokController::class, 'handleCallback'])->name('tiktok.callback');
+    Route::get('/tiktok/disconnect', [TikTokController::class, 'disconnect'])->name('tiktok.disconnect');
 
     Route::get('/instagram-monitoring', [InstagramController::class, 'index'])->name('instagram.monitoring');
     Route::get('/api/instagram-data', [InstagramController::class, 'getApiData'])->name('instagram.data');

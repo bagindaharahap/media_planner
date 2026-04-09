@@ -42,14 +42,14 @@
         tasks: [],
 
         planning: {
-            status: 'backlog', title: '', content_type: 'TikTok', description: '',
+            status: 'backlog', title: '', content_type: ['TikTok'], description: '',
             start_date: '', due_date: '', priority: 'normal', media_link: '', revision_note: '',
             assigned: [{ name: '', jobdesks: [], tools: [] }],
             references: ['']
         },
 
         editingPlanning: {
-            id: '', status: '', title: '', content_type: '', description: '',
+            id: '', status: '', title: '', content_type: [], description: '',
             start_date: '', due_date: '', priority: '', media_link: '', revision_note: '', 
             assigned: [], references: []
         },
@@ -75,22 +75,50 @@
             return `${yyyy}-${mm}-${dd}`;
         },
 
+        normalizeContentTypes(value) {
+            if (Array.isArray(value)) return value;
+            if (typeof value === 'string') {
+                try {
+                    const parsed = JSON.parse(value);
+                    if (Array.isArray(parsed)) return parsed;
+                } catch(e) {}
+                return value.trim() ? [value] : [];
+            }
+            return [];
+        },
+
+        normalizeTask(task) {
+            if (typeof task.assigned === 'string') {
+                try { task.assigned = JSON.parse(task.assigned); } catch(e) { task.assigned = []; }
+            }
+            if (!Array.isArray(task.assigned)) task.assigned = [];
+
+            if (typeof task.references === 'string') {
+                try { task.references = JSON.parse(task.references); } catch(e) { task.references = []; }
+            }
+            if (!Array.isArray(task.references)) task.references = [];
+
+            task.content_type = this.normalizeContentTypes(task.content_type);
+            return task;
+        },
+
+        toggleContentType(type, target = 'planning') {
+            let targetObj = target === 'planning' ? this.planning : this.editingPlanning;
+            let current = this.normalizeContentTypes(targetObj.content_type);
+            if (current.includes(type)) {
+                current = current.filter(t => t !== type);
+            } else {
+                current = [...current, type];
+            }
+            // keep consistent ordering
+            current.sort((a, b) => this.contentTypeOptions.indexOf(a) - this.contentTypeOptions.indexOf(b));
+            targetObj.content_type = current;
+        },
+
         init() {
             try {
                 let rawData = JSON.parse(document.getElementById('plannings-data').textContent);
-                this.tasks = rawData.map(task => {
-                    if (typeof task.assigned === 'string') {
-                        try { task.assigned = JSON.parse(task.assigned); } catch(e) { task.assigned = []; }
-                    }
-                    if (!Array.isArray(task.assigned)) task.assigned = [];
-
-                    if (typeof task.references === 'string') {
-                        try { task.references = JSON.parse(task.references); } catch(e) { task.references = []; }
-                    }
-                    if (!Array.isArray(task.references)) task.references = [];
-
-                    return task;
-                });
+                this.tasks = rawData.map(task => this.normalizeTask(task));
                 this.sortAllTasks();
             } catch(e) {
                 console.error('Failed to load planning data:', e);
@@ -104,7 +132,7 @@
         },
 
         openEdit(task) {
-            this.editingPlanning = JSON.parse(JSON.stringify(task));
+            this.editingPlanning = this.normalizeTask(JSON.parse(JSON.stringify(task)));
             if(!this.editingPlanning.assigned || this.editingPlanning.assigned.length === 0) {
                 this.editingPlanning.assigned = [{ name: '', jobdesks: [], tools: [] }];
             }
@@ -153,15 +181,12 @@
                 let result = await response.json();
                 
                 if(result.success) {
-                    let newTask = result.data;
-                    if(typeof newTask.assigned === 'string') newTask.assigned = JSON.parse(newTask.assigned);
-                    if(typeof newTask.references === 'string') newTask.references = JSON.parse(newTask.references);
-                    
+                    let newTask = this.normalizeTask(result.data);
                     this.tasks.push(newTask);
                     this.sortAllTasks();
                     this.showCreateModal = false;
                     this.planning = { 
-                        status: 'backlog', title: '', content_type: 'TikTok', description: '',
+                        status: 'backlog', title: '', content_type: ['TikTok'], description: '',
                         start_date: '', due_date: '', priority: 'normal', media_link: '', revision_note: '',
                         assigned: [{ name: '', jobdesks: [], tools: [] }], references: [''] 
                     };
@@ -181,10 +206,7 @@
                 if(result.success) {
                     const index = this.tasks.findIndex(t => t.id === this.editingPlanning.id);
                     if (index !== -1) {
-                        let updatedTask = result.data;
-                        if(typeof updatedTask.assigned === 'string') updatedTask.assigned = JSON.parse(updatedTask.assigned);
-                        if(typeof updatedTask.references === 'string') updatedTask.references = JSON.parse(updatedTask.references);
-                        
+                        let updatedTask = this.normalizeTask(result.data);
                         this.tasks[index] = updatedTask;
                         this.sortAllTasks();
                     }
@@ -399,7 +421,14 @@
                             <!-- Card Content -->
                             <div class="space-y-4">
                                 <div class="flex flex-wrap gap-2 pr-12">
-                                    <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-black rounded-lg uppercase tracking-tighter" x-text="task.content_type"></span>
+                                    <template x-if="task.content_type && task.content_type.length">
+                                        <template x-for="type in task.content_type" :key="type">
+                                            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-black rounded-lg uppercase tracking-tighter" x-text="type"></span>
+                                        </template>
+                                    </template>
+                                    <template x-if="!task.content_type || !task.content_type.length">
+                                        <span class="px-2 py-0.5 bg-slate-100 text-slate-400 text-[9px] font-black rounded-lg uppercase tracking-tighter">No Type</span>
+                                    </template>
                                     <span class="px-2 py-0.5 text-[9px] font-black rounded-lg uppercase tracking-tighter" :class="getPriorityClass(task.priority)" x-text="task.priority"></span>
                                 </div>
 
