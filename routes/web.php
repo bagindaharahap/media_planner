@@ -7,6 +7,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromptNoteController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\NotificationController;
 // PERBAIKAN: Tambahkan baris import ini agar Laravel mengenali TikTokController
 use App\Http\Controllers\TikTokController;
 use App\Http\Controllers\InstagramController;
@@ -140,6 +141,8 @@ Route::middleware(['auth'])->group(function () {
     // LOGS ACTIVITY (Semua user yang login)
     // ==========================================
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
     // ==========================================
     // MONITORING MEDIA SOSIAL (Instagram & TikTok)

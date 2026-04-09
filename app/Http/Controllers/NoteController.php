@@ -2,8 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Note;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\ActivityLogger;
+use App\Notifications\SystemNotification;
+use Illuminate\Support\Facades\Notification;
 
 class NoteController extends Controller
 {
@@ -23,6 +26,20 @@ class NoteController extends Controller
 
         $note = Note::create($request->all());
         ActivityLogger::log('Notes', 'create', 'Membuat catatan baru: ' . $note->title, null, $note->toArray());
+
+        // Kirim notifikasi ke Planner jika yang membuat adalah Admin
+        $creator = auth()->user();
+        if ($creator && in_array(strtolower($creator->role), ['admin'])) {
+            $planners = User::whereIn('role', ['Planner', 'Content Planner', 'planner', 'content planner'])->get();
+
+            Notification::send($planners, new SystemNotification(
+                'Calendar Note',
+                'Admin menambahkan catatan: "' . $note->title . '".',
+                'info',
+                route('calendar.index')
+            ));
+        }
+
         return response()->json(['message' => 'Catatan berhasil disimpan', 'note' => $note]);
     }
 

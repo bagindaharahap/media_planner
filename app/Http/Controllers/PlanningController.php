@@ -7,7 +7,8 @@ use App\Models\Planning;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use App\Services\ActivityLogger;
-use App\Notifications\ContentReviewNotification;
+use App\Notifications\SystemNotification;
+use Illuminate\Support\Facades\Notification;
 
 class PlanningController extends Controller
 {
@@ -92,12 +93,45 @@ class PlanningController extends Controller
         
         $statusBaru = $planning->fresh()->status;
         
+        $moverName = optional(auth()->user())->name ?? 'Pengguna';
+        $admins = User::whereIn('role', ['Admin', 'admin'])->get();
+        $assignees = $planning->assigned ?? [];
+        $assigneeNames = collect($assignees)->map(function ($a) {
+            return $a['name'] ?? $a['label'] ?? null;
+        })->filter()->all();
+        $assigneeUsers = User::whereIn('name', $assigneeNames)->get();
+        $plannerFallback = User::whereIn('role', ['Planner', 'Content Planner', 'planner', 'content planner'])->get();
+
         // Notifikasi ke Admin jika status berubah menjadi 'review'
         if ($statusLama !== 'review' && $statusBaru === 'review') {
-            $admins = User::where('role', 'Admin')->get(); 
-            foreach ($admins as $admin) {
-                $admin->notify(new ContentReviewNotification($planning));
-            }
+            Notification::send($admins, new SystemNotification(
+                'Review Required',
+                "{$moverName} memindahkan konten \"{$planning->title}\" ke In Review.",
+                'warning',
+                route('board.index')
+            ));
+        }
+
+        // Konten Revisi: admin memindahkan ke 'revisi'
+        if ($statusLama !== 'revisi' && $statusBaru === 'revisi') {
+            $targets = $assigneeUsers->isNotEmpty() ? $assigneeUsers : $plannerFallback;
+            Notification::send($targets, new SystemNotification(
+                'Revision Needed',
+                "Admin meminta revisi pada konten \"{$planning->title}\".",
+                'error',
+                route('board.index')
+            ));
+        }
+
+        // Konten Disetujui: dari review/revisi ke hold_on atau approved
+        if (in_array($statusLama, ['review', 'revisi']) && in_array($statusBaru, ['hold_on', 'approved'])) {
+            $targets = $assigneeUsers->isNotEmpty() ? $assigneeUsers : $plannerFallback;
+            Notification::send($targets, new SystemNotification(
+                'Content Approved! 🎉',
+                "Kerja bagus! Konten \"{$planning->title}\" telah disetujui Admin.",
+                'success',
+                route('board.index')
+            ));
         }
 
         ActivityLogger::log('Planning', 'update', 'Updated planning: ' . $planning->title, $before, $planning->fresh()->toArray());

@@ -4,6 +4,8 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\Listeners\LogFailedLogin;
+use Illuminate\Auth\Events\Failed;
 
 class AuthServiceProvider extends ServiceProvider
 {
