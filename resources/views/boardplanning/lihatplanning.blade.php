@@ -42,21 +42,20 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <!-- TIKTOK SIMULATION BUTTON (Crucial for Demo) -->
-                <button 
-                    type="button"
-                    @click="window.dispatchEvent(new CustomEvent('open-tiktok-post', { 
-                        detail: { 
-                            title: viewingPlanning.title, 
-                            videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' 
-                        } 
-                    }))"
-                    class="px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-indigo-600 transition-all shadow-md active:scale-95"
-                >
-                    <i class="fa-brands fa-tiktok"></i> Simulate TikTok Post
-                </button>
-
-                <div class="h-8 w-px bg-slate-200 mx-1"></div>
+                <!-- External posting buttons (only when approved) -->
+                <template x-if="viewingPlanning.status === 'approved'">
+                    <div class="flex items-center gap-2">
+                        <a href="https://www.tiktok.com" target="_blank" rel="noopener"
+                           class="px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-slate-800 transition-all shadow-md active:scale-95">
+                            <i class="fa-brands fa-tiktok"></i> TikTok
+                        </a>
+                        <a href="https://www.instagram.com" target="_blank" rel="noopener"
+                           class="px-5 py-2.5 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-md hover:brightness-95 active:scale-95 transition-all">
+                            <i class="fa-brands fa-instagram"></i> Instagram
+                        </a>
+                        <div class="h-8 w-px bg-slate-200 mx-1"></div>
+                    </div>
+                </template>
 
                 <button @click="showLihatModal = false; openEdit(viewingPlanning)" class="w-10 h-10 rounded-full hover:bg-indigo-50 flex items-center justify-center text-indigo-600 transition-colors" title="Edit Plan">
                     <i class="fa-solid fa-pen-to-square"></i>

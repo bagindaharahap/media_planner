@@ -63,9 +63,9 @@
                     <template x-for="type in ['TikTok', 'Reels', 'Feed', 'Story']" :key="type">
                         <button 
                             type="button"
-                            @click="toggleContentType(type, 'planning')"
+                            @click="planning.content_type = type"
                             class="flex items-center justify-center gap-3 px-4 py-3 rounded-2xl border-2 font-bold text-sm transition-all"
-                            :class="planning.content_type.includes(type) 
+                            :class="planning.content_type === type 
                                 ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100' 
                                 : 'bg-white border-slate-100 text-slate-500 hover:border-indigo-200'"
                         >
@@ -78,19 +78,67 @@
 
             <!-- Description Editor -->
             <div class="space-y-3" x-data="{ 
+                isGeneratingAI: false,
                 format(cmd, val = null) { 
                     document.execCommand(cmd, false, val); 
                     $refs.createEditor.focus();
                     planning.description = $refs.createEditor.innerHTML;
+                },
+                async generateAI() {
+                    let topic = prompt('Masukkan topik/ide konten (Contoh: Promo Ramadhan Baju Koko):');
+                    if(!topic) return;
+
+                    this.isGeneratingAI = true;
+                    // Bisa menggunakan popup sukses untuk notif loading sementara
+                    if(typeof AppPopup !== 'undefined') AppPopup.success('AI Sedang Berpikir...', 'Mohon tunggu sebentar...');
+
+                    try {
+                        const csrfToken = document.querySelector('meta[name=\'csrf-token\']').getAttribute('content');
+                        let res = await fetch('{{ route('ai.generate') }}', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                            body: JSON.stringify({ prompt: topic })
+                        });
+                        
+                        let result = await res.json();
+                        
+                        if(result.success) {
+                            // Menambahkan hasil AI ke dalam editor tanpa menghapus teks yang sudah ada
+                            let currentHTML = $refs.createEditor.innerHTML;
+                            let separator = currentHTML.trim() ? '<br><br><hr><br>' : '';
+                            $refs.createEditor.innerHTML = currentHTML + separator + result.data;
+                            planning.description = $refs.createEditor.innerHTML;
+                            
+                            // Tambahkan notifikasi kecil sukses
+                            if(typeof AppPopup !== 'undefined') AppPopup.success('Berhasil', 'Caption AI berhasil dibuat!');
+                        } else {
+                            // Menampilkan error spesifik dari Google API
+                            alert('Gagal: ' + result.message);
+                            console.error('Detail Error AI:', result);
+                        }
+                    } catch(e) {
+                        console.error('Fetch Error:', e);
+                        alert('Terjadi kesalahan jaringan saat menghubungi server AI.');
+                    } finally {
+                        this.isGeneratingAI = false;
+                    }
                 }
             }" x-init="$watch('showCreateModal', value => { if(!value) { $refs.createEditor.innerHTML = ''; } })">
                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Content Description</label>
                 <div class="border border-slate-200 rounded-3xl overflow-hidden shadow-sm bg-white focus-within:ring-2 focus-within:ring-indigo-500/20">
-                    <div class="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-4 text-slate-400">
-                        <button type="button" @click="format('bold')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-bold"></i></button>
-                        <button type="button" @click="format('italic')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-italic"></i></button>
-                        <button type="button" @click="format('underline')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-underline"></i></button>
-                        <button type="button" @click="format('insertUnorderedList')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-list-ul"></i></button>
+                    <div class="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center justify-between text-slate-400">
+                        <div class="flex items-center gap-4">
+                            <button type="button" @click="format('bold')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-bold"></i></button>
+                            <button type="button" @click="format('italic')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-italic"></i></button>
+                            <button type="button" @click="format('underline')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-underline"></i></button>
+                            <button type="button" @click="format('insertUnorderedList')" class="hover:text-indigo-600 p-1.5"><i class="fa-solid fa-list-ul"></i></button>
+                        </div>
+                        
+                        <!-- TOMBOL MAGIC AI -->
+                        <button type="button" @click="generateAI()" :disabled="isGeneratingAI" class="flex items-center gap-2 px-3 py-1.5 bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50">
+                            <i class="fa-solid fa-wand-magic-sparkles" :class="isGeneratingAI ? 'animate-spin' : ''"></i> 
+                            <span x-text="isGeneratingAI ? 'Generating...' : 'AI Caption'"></span>
+                        </button>
                     </div>
                     <!-- Editor Area -->
                     <div x-ref="createEditor" contenteditable="true" @input="planning.description = $el.innerHTML" class="editor-content w-full p-6 min-h-[180px] text-sm text-slate-600 focus:outline-none bg-white" data-placeholder="Write content details, scripts, or main points here..."></div>

@@ -138,23 +138,28 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/prompt-notes/{id}', [PromptNoteController::class, 'destroy'])->name('prompt.destroy');
 
     // ==========================================
+    // GEMINI AI ROUTES
+    // ==========================================
+    Route::post('/ai/generate-caption', [\App\Http\Controllers\AiController::class, 'generateCaption'])->name('ai.generate');
+
+    // ==========================================
     // LOGS ACTIVITY (Semua user yang login)
     // ==========================================
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
 
     // ==========================================
     // MONITORING MEDIA SOSIAL (Instagram & TikTok)
     // ==========================================
     Route::get('/instagram', [InstagramController::class, 'index'])->name('instagram.index');
 
+    // Gunakan controller agar variabel $connected, $tiktokProfile, dll tersedia di view
     Route::get('/tiktok', [TikTokController::class, 'index'])->name('tiktok.index');
 
     // Rute Koneksi TikTok
     Route::get('/tiktok/connect', [TikTokController::class, 'redirectToTikTok'])->name('tiktok.connect');
     Route::get('/tiktok/callback', [TikTokController::class, 'handleCallback'])->name('tiktok.callback');
-    Route::get('/tiktok/disconnect', [TikTokController::class, 'disconnect'])->name('tiktok.disconnect');
 
     Route::get('/instagram-monitoring', [InstagramController::class, 'index'])->name('instagram.monitoring');
     Route::get('/api/instagram-data', [InstagramController::class, 'getApiData'])->name('instagram.data');
